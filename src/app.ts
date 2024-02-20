@@ -10,10 +10,12 @@ import errorHandlers from "middlewares/ErrorHandlers";
 // TODO: write validations.
 const app = express();
 
+const allowedOrigins = ["http://localhost:80", "https://eternal-ai-fullstack.vercel.app"]
+const corsOptions: cors.CorsOptions = {
+    origin: allowedOrigins
+}
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cors({
-
-}));
 
 app.use(userRouter);
 
