@@ -20,7 +20,7 @@ app.use(errorHandlers.errorResponder);
 
 const appPort = Number(process.env.APP_PORT) || 80;
 
-app.listen({ port: appPort }, async () => {
+app.listen({ port: appPort, host: "0.0.0.0" }, async () => {
     await initialRep.init();
     console.log(`app is listening on port: ${appPort}.`);
 })

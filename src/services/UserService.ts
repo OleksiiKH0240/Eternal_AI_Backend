@@ -108,7 +108,7 @@ class UserService {
 
     getMessagesByFamousPerson = async (famousPersonName: string, token: string) => {
         const userId = jwtDataGetters.getUserId(token);
-        const messages = await userRep.getMessagesByFamousPerson(famousPersonName, userId);
+        const messages = await userRep.getMessagesByFamousPerson(famousPersonName.toUpperCase(), userId);
         return messages;
     }
 
