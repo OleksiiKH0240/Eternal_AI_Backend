@@ -106,6 +106,10 @@ class UserRep {
         await this.dbClient.update(users).set({ password }).where(eq(users.userId, userId));
     }
 
+    changeSubscriptionByUserId = async (userId: number, subscriptionId: number) => {
+        await this.dbClient.update(users).set({ subscriptionId }).where(eq(users.userId, userId));
+    }
+
     changeQuestionsCountByUserId = async (userId: number, questionsCount: number) => {
         await this.dbClient.update(users).set({ questionsCount }).where(eq(users.userId, userId));
     }

@@ -38,6 +38,11 @@ userRouter.put("/password",
     userController.changePassword
 );
 
+userRouter.put("/subscription",
+    authenticate,
+    userController.changeSubscription
+);
+
 userRouter.get("/messages-by-famous-person",
     authenticate,
     userController.getMessagesByFamousPerson

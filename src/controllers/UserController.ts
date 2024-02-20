@@ -111,6 +111,19 @@ class ClientController {
         }
     }
 
+    changeSubscription = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const subscriptionId = Number(req.body.subscriptionId);
+            const token = req.headers.authorization;
+
+            await userService.changeSubscription(token!, subscriptionId);
+            res.status(200).json({ message: "subscription was successfully changed." })
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     getMessagesByFamousPerson = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization;
