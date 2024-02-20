@@ -113,7 +113,7 @@ class ClientController {
 
     changeSubscription = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log(req.headers);
+            console.log(req.headers?.origin);
             const subscriptionId = Number(req.body.subscriptionId);
             const token = req.headers.authorization;
 
