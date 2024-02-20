@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1708369226019,
+      "tag": "0000_mysterious_the_initiative",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1708427693407,
+      "tag": "0001_tiny_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708429065566,
+      "tag": "0002_tough_nick_fury",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+    "ts-node": {
+      "esm": true,
+      "experimentalSpecifierResolution": "node"
+    },
+    "compilerOptions": {
+      "target": "ESNext",
+      "lib": ["ESNext"],
+      "module": "ESNext",
+      "skipLibCheck": true,
+      "strict": true,
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "baseUrl": "src",
+      "allowJs": true,
+      "sourceMap": false
+    },
+    "include": ["./src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
