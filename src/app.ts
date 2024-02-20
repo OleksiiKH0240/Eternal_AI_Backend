@@ -20,7 +20,8 @@ app.use(errorHandlers.errorResponder);
 
 const port = Number(process.env.PORT) || 80;
 
-app.get("/", async ({ res }: { res: express.Response }) => {
+app.get("/", async ({ req, res }: { req: express.Request, res: express.Response }) => {
+    console.log(req.headers);
     res.status(200).send("healthy");
 })
 
