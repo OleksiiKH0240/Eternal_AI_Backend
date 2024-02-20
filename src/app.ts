@@ -18,13 +18,13 @@ app.use(userRouter);
 app.use(errorHandlers.errorLogger);
 app.use(errorHandlers.errorResponder);
 
-const appPort = Number(process.env.APP_PORT) || 80;
+const port = Number(process.env.PORT) || 80;
 
 app.get("/", async ({ res }: { res: express.Response }) => {
     res.status(200).send("healthy");
 })
 
-app.listen(appPort, "0.0.0.0", async () => {
+app.listen(port, "0.0.0.0", async () => {
     await initialRep.init();
-    console.log(`app is listening on port: ${appPort}.`);
+    console.log(`app is listening on port: ${port}.`);
 })
