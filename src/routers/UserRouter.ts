@@ -13,6 +13,14 @@ userRouter.post("/log-in",
     userController.logIn
 );
 
+userRouter.get("/oauth/google/url",
+    userController.oauthGoogleUrl
+);
+
+userRouter.get("/oauth/google",
+    userController.oauthGoogle
+);
+
 userRouter.get("/user",
     authenticate,
     userController.getUser

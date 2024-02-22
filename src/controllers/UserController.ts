@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import userService from "../services/UserService";
+import googleOAuthService from "services/GoogleOAuthService";
 
 
 class ClientController {
@@ -34,6 +35,29 @@ class ClientController {
             if (userExists && isPasswordValid && token !== undefined) {
                 res.setHeader("authorization", token).status(200).json({ message: "user was successfully logged in.", token });
             }
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
+    oauthGoogleUrl = async ({ res, next }: { res: Response, next: NextFunction }) => {
+        try {
+            res.status(200).json({ url: googleOAuthService.getGoogleOAuthUrl() });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
+    oauthGoogle = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const code = req.query.code as string;
+
+            const { token } = await userService.oauthGoogle(code);
+
+            res.setHeader("authorization", token).
+                redirect(process.env.AFTER_GOOGLE_OAUTH_REDIRECT_URI as string);
         }
         catch (error) {
             next(error);

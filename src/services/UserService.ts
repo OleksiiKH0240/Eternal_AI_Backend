@@ -3,16 +3,16 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
-import { max } from "drizzle-orm";
+import googleOAuthService from "./GoogleOAuthService";
 
 
 class UserService {
-    signUp = async (email: string, password: string) => {
+    signUp = async (email: string, password: string, name?: string) => {
         const user = await userRep.getUserByEmail(email);
         if (user === undefined) {
             const saltRounds = Number(process.env.SALT_ROUNDS);
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-            await userRep.addUser(email, hashedPassword);
+            await userRep.addUser(email, hashedPassword, name);
 
             return {
                 UserExists: false
@@ -66,6 +66,32 @@ class UserService {
                 token: undefined
             }
         }
+    }
+
+    oauthGoogle = async (code: string) => {
+        const { id_token } = await googleOAuthService.getGoogleOAuthTokens(code);
+        const { email, name, password } = googleOAuthService.getUserFromIdToken(id_token);
+
+        const user = await userRep.getUserByEmail(email);
+        let userId: number;
+        if (user === undefined) {
+            ({ userId } = await userRep.addUser(email, password, name));
+        }
+        else {
+            userId = user.userId;
+        }
+
+        const ttl = Number(process.env.JWT_TTL);
+        const JWT_SECRET = String(process.env.JWT_SECRET);
+        const token = jwt.sign(
+            {
+                userId
+            },
+            JWT_SECRET, { expiresIn: ttl });
+
+        return {
+            token
+        };
     }
 
     getUser = async (token: string) => {

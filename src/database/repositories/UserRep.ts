@@ -81,13 +81,15 @@ class UserRep {
         return result[0];
     }
 
-    addUser = async (email: string, password: string, phone?: string, name?: string) => {
-        await this.dbClient.insert(users).values({
+    addUser = async (email: string, password: string, name?: string, phone?: string) => {
+        const result = await this.dbClient.insert(users).values({
             email,
             password,
             phone,
             name
-        });
+        }).returning({ userId: users.userId });
+
+        return result[0];
     }
 
     changeNameByUserId = async (userId: number, name: string) => {
