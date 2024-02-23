@@ -1,6 +1,7 @@
 import { Router } from "express";
 import userController from "../controllers/UserController";
 import authenticate from "../middlewares/Authentication"
+import userMiddlewares from "middlewares/UserMiddlewares";
 
 
 const userRouter = Router();
@@ -62,6 +63,7 @@ userRouter.get("/messages-by-famous-person",
 );
 
 userRouter.post("/message",
+    userMiddlewares.validateAnswerMessage,
     userController.answerMessage
 );
 
