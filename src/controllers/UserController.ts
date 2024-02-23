@@ -55,12 +55,21 @@ class ClientController {
             const code = req.query.code as string;
 
             const { token } = await userService.oauthGoogle(code);
+
+            const redirectUrl = process.env.FRONTEND_ORIGIN;
+
             if (token === undefined) {
-                return res.redirect(process.env.FRONTEND_ORIGIN as string);
+                if (redirectUrl === undefined) {
+                    return res.status(400).json({ message: "something went wrong during google oauth." });
+                }
+                return res.redirect(redirectUrl as string);
             }
 
+            if (redirectUrl === undefined) {
+                return res.status(200).json({ token, message: "user was successfully authorized." });
+            }
             res.setHeader("authorization", token).
-                redirect(process.env.FRONTEND_ORIGIN as string);
+                redirect(redirectUrl as string);
         }
         catch (error) {
             next(error);
