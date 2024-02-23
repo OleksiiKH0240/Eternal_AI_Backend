@@ -12,6 +12,7 @@
 		"drizzle-orm": "^0.29.3",
 		"express": "^4.18.2",
 		"jsonwebtoken": "^9.0.2",
+		"openai": "^4.28.0",
 		"pg": "^8.11.3"
 	},
 	"devDependencies": {

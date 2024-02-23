@@ -185,12 +185,18 @@ class UserService {
                 await userRep.changeQuestionsCountByUserId(userId, user.questionsCount + 1);
             }
             // if user.subscriptionId === 1 or if limit was not reached
-            await userRep.addMessageByFamousPersonId(famousPersonId, userId, true, message);
 
             const messages = (await userRep.getMessagesByFamousPerson(famousPersonName, userId)).
                 map(({ fromUser, content }) => ({ fromUser, content }));
+            messages.push({ fromUser: true, content: message });
+
             const answer = await chatGptService.answerMessages(messages, famousPersonName, famousPersonDescription);
 
+            if (answer === null) {
+                return { isQuestionAllowed: true, isLimitReached: false, answer };
+            }
+
+            await userRep.addMessageByFamousPersonId(famousPersonId, userId, true, message);
             await userRep.addMessageByFamousPersonId(famousPersonId, userId, false, answer);
 
             return { isQuestionAllowed: true, isLimitReached: false, answer };

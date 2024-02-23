@@ -191,6 +191,10 @@ class ClientController {
                 return res.status(400).json({ message: "you reached your free account messages limit." });
             }
 
+            if (answer === null) {
+                return res.status(200).json({ answer: null, message: "chat gpt couldn't answer the question." });
+            }
+
             if (answer !== undefined) {
                 res.status(200).json({ answer });
             }
