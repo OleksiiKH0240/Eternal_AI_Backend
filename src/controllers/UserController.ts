@@ -162,6 +162,18 @@ class ClientController {
         }
     }
 
+    addQuestions = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const quantity = req.body.quantity;
+            const token = req.headers.authorization;
+            await userService.addQuestions(token!, quantity);
+            res.status(200).json({ message: "questions were added successfully." });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     getMessagesByFamousPerson = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization;

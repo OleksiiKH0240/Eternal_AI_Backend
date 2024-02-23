@@ -51,6 +51,11 @@ userRouter.put("/subscription",
     userController.changeSubscription
 );
 
+userRouter.put("/add-questions",
+    authenticate,
+    userController.addQuestions
+);
+
 userRouter.get("/messages-by-famous-person",
     authenticate,
     userController.getMessagesByFamousPerson

@@ -20,14 +20,14 @@ class ChatGptService {
         const queryMessages = systemMessage.concat(conversationMessages);
         console.log(queryMessages);
 
-        const completion = await openai.chat.completions.create({
-            messages: queryMessages as ChatCompletionMessageParam[],
-            model: "gpt-3.5-turbo"
-        });
+        // const completion = await openai.chat.completions.create({
+        //     messages: queryMessages as ChatCompletionMessageParam[],
+        //     model: "gpt-3.5-turbo"
+        // });
 
-        const answer = completion.choices[0].message.content;
+        // const answer = completion.choices[0].message.content;
 
-        return answer;
+        // return answer;
         return "unfinished chat gpt service answer.";
     }
 }

@@ -145,6 +145,12 @@ class UserService {
         await userRep.changeSubscriptionByUserId(userId, subscriptionId);
     }
 
+    addQuestions = async (token: string, quantity: number) => {
+        const userId = jwtDataGetters.getUserId(token);
+        const { questionsCount } = await userRep.getUserByUserId(userId);
+        await userRep.changeQuestionsCountByUserId(userId, questionsCount - quantity);
+    }
+
     getMessagesByFamousPerson = async (famousPersonName: string, token: string) => {
         const userId = jwtDataGetters.getUserId(token);
         const messages = await userRep.getMessagesByFamousPerson(famousPersonName.toUpperCase(), userId);
