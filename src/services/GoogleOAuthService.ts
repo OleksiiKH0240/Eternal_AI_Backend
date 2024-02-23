@@ -45,7 +45,7 @@ class GoogleOAuthService {
             ].join(" ")
         }
 
-        // console.log(options);
+        console.log(options);
 
         const queryStr = new URLSearchParams(options);
 
