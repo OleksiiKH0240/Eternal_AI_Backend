@@ -69,7 +69,14 @@ class UserService {
     }
 
     oauthGoogle = async (code: string) => {
-        const { id_token } = await googleOAuthService.getGoogleOAuthTokens(code);
+        let id_token;
+        try {
+            ({ id_token } = await googleOAuthService.getGoogleOAuthTokens(code));
+        }
+        catch (error) {
+            console.log(error);
+            return { id_token: undefined };
+        }
         const { email, name, password } = googleOAuthService.getUserFromIdToken(id_token);
 
         const user = await userRep.getUserByEmail(email);

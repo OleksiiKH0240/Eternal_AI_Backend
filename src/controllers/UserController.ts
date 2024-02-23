@@ -55,9 +55,12 @@ class ClientController {
             const code = req.query.code as string;
 
             const { token } = await userService.oauthGoogle(code);
+            if (token === undefined) {
+                return res.redirect(process.env.FRONTEND_ORIGIN as string);
+            }
 
             res.setHeader("authorization", token).
-                redirect(process.env.AFTER_GOOGLE_OAUTH_REDIRECT_URI as string);
+                redirect(process.env.FRONTEND_ORIGIN as string);
         }
         catch (error) {
             next(error);
