@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "eternal_ai"."chats" (
 CREATE TABLE IF NOT EXISTS "eternal_ai"."famous_people" (
 	"famous_person_id" serial PRIMARY KEY NOT NULL,
 	"name" varchar NOT NULL,
-	"description" varchar
+	"description" varchar DEFAULT '' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "eternal_ai"."messages" (
@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS "eternal_ai"."users" (
 	"name" varchar,
 	"phone" varchar,
 	"subscription_id" integer DEFAULT 0 NOT NULL,
+	"subscription_expire_date" timestamp DEFAULT localtimestamp NOT NULL,
+	"questions_count" integer DEFAULT 0 NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint

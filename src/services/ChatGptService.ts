@@ -18,12 +18,14 @@ class ChatGptService {
         }));
 
         const queryMessages = systemMessage.concat(conversationMessages);
-        console.log(queryMessages);
+        // console.log(queryMessages);
 
         // const completion = await openai.chat.completions.create({
         //     messages: queryMessages as ChatCompletionMessageParam[],
+        //     // max_tokens: 100,
         //     model: "gpt-3.5-turbo"
         // });
+        // console.log(completion);
 
         // const answer = completion.choices[0].message.content;
 

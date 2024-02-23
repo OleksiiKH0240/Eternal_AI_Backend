@@ -112,6 +112,10 @@ class UserRep {
         await this.dbClient.update(users).set({ subscriptionId }).where(eq(users.userId, userId));
     }
 
+    changeSubscriptionExpireDateByUserId = async (userId: number, subscriptionExpireDate: Date) => {
+        await this.dbClient.update(users).set({ subscriptionExpireDate }).where(eq(users.userId, userId));
+    }
+
     changeQuestionsCountByUserId = async (userId: number, questionsCount: number) => {
         await this.dbClient.update(users).set({ questionsCount }).where(eq(users.userId, userId));
     }

@@ -1,5 +1,5 @@
 {
-  "id": "55ca2d37-1341-4d8a-947b-405671040e94",
+  "id": "ab3e9607-a65f-49c3-845e-62304782a476",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -67,7 +67,8 @@
           "name": "description",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "''"
         }
       },
       "indexes": {
@@ -176,6 +177,20 @@
         },
         "subscription_id": {
           "name": "subscription_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "subscription_expire_date": {
+          "name": "subscription_expire_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "localtimestamp"
+        },
+        "questions_count": {
+          "name": "questions_count",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

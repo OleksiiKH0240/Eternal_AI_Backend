@@ -143,6 +143,12 @@ class UserService {
         const userId = jwtDataGetters.getUserId(token);
 
         await userRep.changeSubscriptionByUserId(userId, subscriptionId);
+        if (subscriptionId === 1) {
+            const now = new Date();
+            // const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
+            const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
+            await userRep.changeSubscriptionExpireDateByUserId(userId, nowPlus1Mon);
+        }
     }
 
     addQuestions = async (token: string, quantity: number) => {
@@ -183,6 +189,12 @@ class UserService {
         else {
             const userId = jwtDataGetters.getUserId(token);
             const user = await userRep.getUserByUserId(userId);
+
+            if (user.subscriptionId === 1 && user.subscriptionExpireDate < new Date()) {
+                user.subscriptionId = 0;
+                await userRep.changeSubscriptionByUserId(userId, 0);
+            }
+
             if (user.subscriptionId === 0) {
                 if (user.questionsCount >= regMaxQuestionsCount) {
                     return { isLimitReached: true };
@@ -190,6 +202,7 @@ class UserService {
 
                 await userRep.changeQuestionsCountByUserId(userId, user.questionsCount + 1);
             }
+
             // if user.subscriptionId === 1 or if limit was not reached
 
             const messages = (await userRep.getMessagesByFamousPerson(famousPersonName, userId)).
