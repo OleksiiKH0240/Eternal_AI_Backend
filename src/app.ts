@@ -30,14 +30,14 @@ app.get("/", async ({ req, res }: { req: express.Request, res: express.Response 
     res.status(200).send("healthy");
 })
 
-app.get("/oauth/google/url", async ({ res }: { res: express.Response }) => {
+// app.get("/oauth/google/url", async ({ res }: { res: express.Response }) => {
 
-})
+// })
 
-app.get("/oauth/google", async ({ req, res }: { req: express.Request, res: express.Response }) => {
+// app.get("/oauth/google", async ({ req, res }: { req: express.Request, res: express.Response }) => {
 
 
-})
+// })
 
 app.listen(port, "0.0.0.0", async () => {
     await initialRep.init();

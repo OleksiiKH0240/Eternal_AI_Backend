@@ -68,7 +68,7 @@ class ClientController {
             if (redirectUrl === undefined) {
                 return res.status(200).json({ token, message: "user was successfully authorized." });
             }
-            res.redirect(`${redirectUrl}/?authorization=${encodeURIComponent(token)}`);
+            res.cookie("authorization", token).redirect(`${redirectUrl}`);
         }
         catch (error) {
             next(error);
