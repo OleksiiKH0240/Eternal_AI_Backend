@@ -9,7 +9,7 @@ import errorHandlers from "middlewares/ErrorHandlers";
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:80", "https://eternal-ai-fullstack.vercel.app"]
+const allowedOrigins = ["http://localhost:80", "https://eternal-ai-fullstack.vercel.app", "http://localhost:3000"]
 const corsOptions: cors.CorsOptions = {
     origin: allowedOrigins
 }
