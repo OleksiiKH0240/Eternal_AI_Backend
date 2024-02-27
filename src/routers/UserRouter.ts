@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userController from "../controllers/UserController";
-import authenticate from "../middlewares/Authentication"
+import { authenticate, authenticateFrontendUser } from "../middlewares/Authentication"
 import userMiddlewares from "middlewares/UserMiddlewares";
 
 
@@ -54,12 +54,14 @@ userRouter.put("/password",
 );
 
 userRouter.put("/subscription",
+    authenticateFrontendUser,
     authenticate,
     userMiddlewares.validateChangeSubscription,
     userController.changeSubscription
 );
 
 userRouter.put("/add-questions",
+    authenticateFrontendUser,
     authenticate,
     userMiddlewares.validateAddQuestions,
     userController.addQuestions

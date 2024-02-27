@@ -56,6 +56,7 @@ class ClientController {
 
             const { token } = await userService.oauthGoogle(code);
 
+
             const redirectUrl = process.env.FRONTEND_ORIGIN;
 
             if (token === undefined) {

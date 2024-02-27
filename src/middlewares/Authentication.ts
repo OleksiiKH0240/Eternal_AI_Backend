@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express"
 import jwt, { JwtPayload } from "jsonwebtoken";
+import jwtDataGetters from "utils/jwtDataGetters";
 
 
-const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     let token = req.headers.authorization;
     if (token === undefined) {
         res.status(401).json({
@@ -17,10 +18,33 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
             next();
         }
         catch (error) {
-            res.status(401).json({ message: "Invalid token." })
+            res.status(401).json({ message: "Invalid token." });
         }
     }
 
 }
 
-export default authenticate;
+export const authenticateFrontendUser = async (req: Request, res: Response, next: NextFunction) => {
+    let { frontendUserToken } = req.body;
+    if (frontendUserToken === undefined) {
+        res.status(401).json({
+            message: "no frontend user access token was provided."
+        })
+    }
+    else {
+        frontendUserToken = frontendUserToken.includes("Bearer ") ? frontendUserToken.split(" ")[1] : frontendUserToken;
+        const { JWT_SECRET } = process.env;
+        try {
+            const decodedToken = jwt.verify(frontendUserToken, JWT_SECRET!);
+            const subscriptionId = jwtDataGetters.getSubscriptionId(frontendUserToken);
+            if (subscriptionId !== -1) {
+                throw new Error("Invalid token.");
+            }
+            next();
+        }
+        catch (error) {
+            res.status(401).json({ message: "Invalid token." });
+        }
+    }
+}
+

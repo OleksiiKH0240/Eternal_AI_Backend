@@ -7,20 +7,31 @@ import googleOAuthService from "./GoogleOAuthService";
 
 
 class UserService {
+    init = async () => {
+        const { FRONTEND_ORIGIN } = process.env;
+        const email = `frontendUser@${FRONTEND_ORIGIN?.replace(/(http)s?:\/\//, "")}`;
+        const { FRONTEND_USER_PASSWORD: password } = process.env;
+
+        const { userId } = await this.signUp(email, password!, "frontendUser");
+        await userRep.changeSubscriptionByUserId(userId, -1);
+    }
+
     signUp = async (email: string, password: string, name?: string) => {
         const user = await userRep.getUserByEmail(email);
         if (user === undefined) {
             const saltRounds = Number(process.env.SALT_ROUNDS);
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-            await userRep.addUser(email, hashedPassword, name);
+            const { userId } = await userRep.addUser(email, hashedPassword, name);
 
             return {
-                UserExists: false
+                UserExists: false,
+                userId
             }
         }
         else {
             return {
-                UserExists: true
+                UserExists: true,
+                userId: user.userId
             }
         }
     }
@@ -40,11 +51,15 @@ class UserService {
             if (isPasswordValid) {
                 const ttl = Number(process.env.JWT_TTL);
                 const JWT_SECRET = String(process.env.JWT_SECRET);
+                const options = (user.subscriptionId === -1) ? {} : { expiresIn: ttl };
+
                 const token = jwt.sign(
                     {
-                        userId: user.userId
+                        userId: user.userId,
+                        subscriptionId: user.subscriptionId
                     },
-                    JWT_SECRET, { expiresIn: ttl });
+                    JWT_SECRET, options);
+
                 return {
                     userExists: true,
                     isPasswordValid: true,

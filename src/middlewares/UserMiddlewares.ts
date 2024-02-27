@@ -13,8 +13,8 @@ class UserMiddlewares {
 
     validateChangeSubscription = async (req: Request, res: Response, next: NextFunction) => {
         const { subscriptionId } = req.body;
-        if (typeof subscriptionId !== "number" || !Number.isInteger(subscriptionId)) {
-            return res.status(400).json({ message: "field subscriptionId has invalid type. " })
+        if (typeof subscriptionId !== "number" || !Number.isInteger(subscriptionId) || subscriptionId < 0) {
+            return res.status(400).json({ message: "field subscriptionId has invalid type or is less than zero. " })
         }
         next();
     }

@@ -5,6 +5,7 @@ import cors from "cors";
 import userRouter from "./routers/UserRouter";
 import initialRep from "./database/repositories"
 import errorHandlers from "middlewares/ErrorHandlers";
+import UserService from "services/UserService";
 
 
 const app = express();
@@ -30,5 +31,6 @@ app.get("/", async ({ req, res }: { req: express.Request, res: express.Response 
 
 app.listen(port, "0.0.0.0", async () => {
     await initialRep.init();
+    await UserService.init();
     console.log(`app is listening on port: ${port}.`);
 })
