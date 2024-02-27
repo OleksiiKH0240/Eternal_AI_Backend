@@ -7,10 +7,12 @@ import userMiddlewares from "middlewares/UserMiddlewares";
 const userRouter = Router();
 
 userRouter.post("/sign-up",
+    userMiddlewares.validateAuth,
     userController.signUp
 );
 
 userRouter.post("/log-in",
+    userMiddlewares.validateAuth,
     userController.logIn
 );
 
@@ -29,31 +31,37 @@ userRouter.get("/user",
 
 userRouter.put("/name",
     authenticate,
+    userMiddlewares.validateChangeName,
     userController.changeName
 );
 
 userRouter.put("/phone",
     authenticate,
+    userMiddlewares.validateChangePhone,
     userController.changePhone
 );
 
 userRouter.put("/email",
     authenticate,
+    userMiddlewares.validateChangeEmail,
     userController.changeEmail
 );
 
 userRouter.put("/password",
     authenticate,
+    userMiddlewares.validateChangePassword,
     userController.changePassword
 );
 
 userRouter.put("/subscription",
     authenticate,
+    userMiddlewares.validateChangeSubscription,
     userController.changeSubscription
 );
 
 userRouter.put("/add-questions",
     authenticate,
+    userMiddlewares.validateAddQuestions,
     userController.addQuestions
 );
 
