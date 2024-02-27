@@ -1,13 +1,11 @@
 import "dotenv/config";
+import "utils/checks";
 import express from "express";
 import cors from "cors";
 import userRouter from "./routers/UserRouter";
 import initialRep from "./database/repositories"
 import errorHandlers from "middlewares/ErrorHandlers";
-import envVarsCheck from "utils/checks";
 
-
-envVarsCheck();
 
 const app = express();
 

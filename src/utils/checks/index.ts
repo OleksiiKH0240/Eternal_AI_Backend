@@ -16,4 +16,4 @@ const envVarsCheck = () => {
     chatGptOptionsCheck();
 }
 
-export default envVarsCheck;
+export default envVarsCheck();
