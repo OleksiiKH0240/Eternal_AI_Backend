@@ -103,7 +103,7 @@ class UserService {
 
     getUser = async (token: string) => {
         const userId = jwtDataGetters.getUserId(token);
-        const user = await userRep.getUserByUserId(userId);
+        const { password, ...user } = await userRep.getUserByUserId(userId);
         return user;
     }
 
