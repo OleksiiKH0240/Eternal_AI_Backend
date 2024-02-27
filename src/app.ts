@@ -4,11 +4,11 @@ import cors from "cors";
 import userRouter from "./routers/UserRouter";
 import initialRep from "./database/repositories"
 import errorHandlers from "middlewares/ErrorHandlers";
-import googleOAuthService from "services/GoogleOAuthService";
+import envVarsCheck from "utils/checks";
 
 
-// TODO: write checks for env variables.
-// TODO: write validations.
+envVarsCheck();
+
 const app = express();
 
 const allowedOrigins = ["http://localhost:80", "https://eternal-ai-fullstack.vercel.app"]
@@ -29,15 +29,6 @@ app.get("/", async ({ req, res }: { req: express.Request, res: express.Response 
     console.log(req);
     res.status(200).send("healthy");
 })
-
-// app.get("/oauth/google/url", async ({ res }: { res: express.Response }) => {
-
-// })
-
-// app.get("/oauth/google", async ({ req, res }: { req: express.Request, res: express.Response }) => {
-
-
-// })
 
 app.listen(port, "0.0.0.0", async () => {
     await initialRep.init();

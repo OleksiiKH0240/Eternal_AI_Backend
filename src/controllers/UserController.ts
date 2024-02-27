@@ -59,13 +59,13 @@ class ClientController {
             const redirectUrl = process.env.FRONTEND_ORIGIN;
 
             if (token === undefined) {
-                if (redirectUrl === undefined) {
+                if (redirectUrl === "") {
                     return res.status(400).json({ message: "something went wrong during google oauth." });
                 }
                 return res.redirect(redirectUrl as string);
             }
 
-            if (redirectUrl === undefined) {
+            if (redirectUrl === "") {
                 return res.status(200).json({ token, message: "user was successfully authorized." });
             }
             res.cookie("authorization", token).redirect(`${redirectUrl}`);
