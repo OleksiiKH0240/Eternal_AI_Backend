@@ -100,7 +100,11 @@ class ClientController {
             } = await userService.changeUser(token!, name, phone, email, password);
 
             if (isEmailOccupied === true) {
-                return res.status(400).json({ message: "this email is occupied by another user." });
+                return res.status(200).json({
+                    message: "email is occupied by another user, other user data was successfully changed.",
+                    isEmailOccupied,
+                    name: modName, phone: modPhone, email: modEmail
+                });
             }
 
             res.status(200).json({

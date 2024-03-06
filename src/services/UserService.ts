@@ -130,11 +130,11 @@ class UserService {
 
     changeUser = async (token: string, name?: string, phone?: string, email?: string, password?: string) => {
         const userId = jwtDataGetters.getUserId(token);
-
+        let isEmailOccupied = false;
         if (email !== undefined) {
             const user = await userRep.getUserByEmail(email);
             if (user !== undefined) {
-                return { isEmailOccupied: true };
+                isEmailOccupied = true;
             }
         }
 
@@ -144,13 +144,19 @@ class UserService {
             hashedPassword = await bcrypt.hash(password, saltRounds);
         }
 
-        const modUserInfo = await userRep.changeUserById(userId, name, phone, email, hashedPassword);
+        const modUserInfo = await userRep.changeUserById(
+            userId,
+            name,
+            phone,
+            (isEmailOccupied === true ? undefined : email),
+            hashedPassword
+        );
 
         return {
             "name": name === undefined ? name : modUserInfo.name,
             "phone": phone === undefined ? phone : modUserInfo.phone,
-            "email": email === undefined ? email : modUserInfo.email,
-            isEmailOccupied: false
+            "email": email === undefined && isEmailOccupied === false ? email : modUserInfo.email,
+            isEmailOccupied
         };
     }
 
