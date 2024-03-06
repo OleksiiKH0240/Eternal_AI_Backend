@@ -92,16 +92,42 @@ class UserRep {
         return result[0];
     }
 
+    changeUserById = async (userId: number, name?: string, phone?: string, email?: string, password?: string) => {
+        const result = await this.dbClient.
+            update(users).
+            set({ name, phone, email, password }).
+            where(eq(users.userId, userId)).
+            returning({
+                name: users.name,
+                phone: users.phone,
+                email: users.email
+            });
+
+        return result[0];
+    }
+
     changeNameByUserId = async (userId: number, name: string) => {
-        await this.dbClient.update(users).set({ name }).where(eq(users.userId, userId));
+        await this.dbClient.
+            update(users).
+            set({ name }).
+            where(eq(users.userId, userId)).
+            returning({ name: users.name });
     }
 
     changePhoneByUserId = async (userId: number, phone: string) => {
-        await this.dbClient.update(users).set({ phone }).where(eq(users.userId, userId));
+        await this.dbClient.
+            update(users).
+            set({ phone }).
+            where(eq(users.userId, userId)).
+            returning({ phone: users.phone });
     }
 
     changeEmailByUserId = async (userId: number, email: string) => {
-        await this.dbClient.update(users).set({ email }).where(eq(users.userId, userId));
+        await this.dbClient.
+            update(users).
+            set({ email }).
+            where(eq(users.userId, userId)).
+            returning({ email: users.email });
     }
 
     changePasswordByUserId = async (userId: number, password: string) => {
@@ -120,7 +146,12 @@ class UserRep {
         await this.dbClient.update(users).set({ questionsCount }).where(eq(users.userId, userId));
     }
 
-    getMessagesByFamousPerson = async (famousPersonName: string, userId: number) => {
+    changeHasShareBonusByUserId = async (userId: number, hasShareBonus: boolean) => {
+        await this.dbClient.update(users).set({ hasShareBonus }).where(eq(users.userId, userId));
+    }
+
+
+    getMessagesByFamousPerson = async (famousPersonName: string, userId: number, offset?: number, limit?: number) => {
         const filteredChats = this.dbClient.select({
             chatId: chats.chatId,
             famousPersonId: chats.famousPersonId,
@@ -135,7 +166,7 @@ class UserRep {
                 eq(chats.userId, userId)
             )).as("filtered_chats");
 
-        const result = await this.dbClient.select({
+        const resultQuery = this.dbClient.select({
             messageId: messages.messageId,
             fromUser: messages.fromUser,
             userId: filteredChats.userId,
@@ -148,6 +179,10 @@ class UserRep {
             innerJoin(filteredChats, eq(filteredChats.chatId, messages.chatId)).
             innerJoin(users, eq(users.userId, filteredChats.userId));
         // innerJoin(famousPeople, eq(famousPeople.famousPersonId, filteredChats.famousPersonId));
+
+        const result = (offset !== undefined && limit !== undefined) ?
+            await resultQuery.offset(offset).limit(limit) :
+            await resultQuery;
 
         return result;
     }

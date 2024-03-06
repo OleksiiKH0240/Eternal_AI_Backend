@@ -23,7 +23,7 @@ class ClientController {
     logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body;
-            const { userExists, isPasswordValid, token } = await userService.logIn(email, password);
+            const { userExists, isPasswordValid, token, userInfo } = await userService.logIn(email, password);
             if (userExists === false) {
                 res.status(401).json({ message: "user with this email does not exist." });
             }
@@ -33,7 +33,7 @@ class ClientController {
             }
 
             if (userExists && isPasswordValid && token !== undefined) {
-                res.setHeader("authorization", token).status(200).json({ message: "user was successfully logged in.", token });
+                res.setHeader("authorization", token).status(200).json({ message: "user was successfully logged in.", token, userInfo });
             }
         }
         catch (error) {
@@ -83,6 +83,31 @@ class ClientController {
             res.status(200).json(user);
         }
         catch (error) {
+            next(error);
+        }
+    }
+
+    changeUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const { name, phone, email, password } = req.body;
+
+            const {
+                isEmailOccupied,
+                name: modName,
+                phone: modPhone,
+                email: modEmail
+            } = await userService.changeUser(token!, name, phone, email, password);
+
+            if (isEmailOccupied === true) {
+                return res.status(400).json({ message: "this email is occupied by another user." });
+            }
+
+            res.status(200).json({
+                message: "user data was successfully changed.",
+                name: modName, phone: modPhone, email: modEmail
+            });
+        } catch (error) {
             next(error);
         }
     }
@@ -162,12 +187,47 @@ class ClientController {
         }
     }
 
-    addQuestions = async (req: Request, res: Response, next: NextFunction) => {
+    stripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const quantity = req.body.quantity;
+            const event = req.body;
+
+            switch (event.type) {
+                case 'payment_intent.succeeded':
+                    const paymentIntent = event.data.object;
+                    console.log("payment_intent.succeeded.");
+                    break;
+
+                default:
+                    console.log(`Unhandled event type ${event.type}`);
+            }
+
+            res.json({ received: true });
+
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    shareBonus = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const quantity = 3;
+            const shareUrl = req.body.shareUrl;
             const token = req.headers.authorization;
-            await userService.addQuestions(token!, quantity);
-            res.status(200).json({ message: "questions were added successfully." });
+
+            const { hasShareBonus, isUrlValid, isShareBonusGranted } = await userService.shareBonus(token!, quantity, shareUrl);
+
+            if (hasShareBonus === false) {
+                return res.status(400).json({ message: "share bonus has already been granted once." });
+            }
+
+            if (isUrlValid === false) {
+                return res.status(400).json({ message: "shareUrl is invalid." });
+            }
+
+            if (isShareBonusGranted === true) {
+                res.status(200).json({ message: "questions were added successfully." });
+            }
+
         }
         catch (error) {
             next(error);
@@ -179,8 +239,10 @@ class ClientController {
             const token = req.headers.authorization;
             // console.log(req.query);
             const famousPersonName = String(req.query["famous-person-name"]).toUpperCase();
+            const page = Number(req.query.page);
+            const limit = Number(req.query.limit);
 
-            const messages = await userService.getMessagesByFamousPerson(famousPersonName, token!);
+            const messages = await userService.getMessagesByFamousPerson(famousPersonName, token!, page, limit);
             res.status(200).json(messages);
         }
         catch (error) {

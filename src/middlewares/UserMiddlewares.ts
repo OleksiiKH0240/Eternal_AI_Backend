@@ -19,12 +19,20 @@ class UserMiddlewares {
         next();
     }
 
-    validateAddQuestions = async (req: Request, res: Response, next: NextFunction) => {
-        const { quantity } = req.body;
-        if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 0) {
-            return res.status(400).json({ message: "field quantity has invalid type or is less than zero. " })
+    validateShareBonus = async (req: Request, res: Response, next: NextFunction) => {
+        const { shareUrl } = req.body;
+        if (typeof shareUrl !== "string") {
+            return res.status(400).json({ message: "field shareUrl has invalid type. " })
         }
         next();
+    }
+
+    validateChangeUser = async (req: Request, res: Response, next: NextFunction) => {
+        // TODO: finish it.
+    }
+
+    validateGetMessages = async (req: Request, res: Response, next: NextFunction) => {
+        // TODO: finish it.
     }
 
     validateChangeName = async (req: Request, res: Response, next: NextFunction) => {

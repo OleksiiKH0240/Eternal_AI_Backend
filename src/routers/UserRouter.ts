@@ -29,6 +29,11 @@ userRouter.get("/user",
     userController.getUser
 );
 
+userRouter.put("/user",
+    authenticate,
+    userController.changeUser
+);
+
 userRouter.put("/name",
     authenticate,
     userMiddlewares.validateChangeName,
@@ -53,6 +58,10 @@ userRouter.put("/password",
     userController.changePassword
 );
 
+userRouter.post("/stripe-webhook",
+    userController.stripeWebhook
+);
+
 userRouter.put("/subscription",
     authenticateFrontendUser,
     authenticate,
@@ -60,11 +69,10 @@ userRouter.put("/subscription",
     userController.changeSubscription
 );
 
-userRouter.put("/add-questions",
-    authenticateFrontendUser,
+userRouter.put("/share-bonus",
     authenticate,
-    userMiddlewares.validateAddQuestions,
-    userController.addQuestions
+    userMiddlewares.validateShareBonus,
+    userController.shareBonus
 );
 
 userRouter.get("/messages-by-famous-person",

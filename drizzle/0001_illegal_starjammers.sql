@@ -1,0 +1,1 @@
+ALTER TABLE "eternal_ai"."users" ADD COLUMN "has_share_bonus" boolean DEFAULT true NOT NULL;

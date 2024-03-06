@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
 import googleOAuthService from "./GoogleOAuthService";
+import axios from "axios";
 
 
 class UserService {
@@ -60,10 +61,15 @@ class UserService {
                     },
                     JWT_SECRET, options);
 
+                const {
+                    password, hasShareBonus, questionsCount, ...userInfo
+                } = user;
+
                 return {
                     userExists: true,
                     isPasswordValid: true,
-                    token
+                    token,
+                    userInfo
                 }
             }
             else {
@@ -118,8 +124,34 @@ class UserService {
 
     getUser = async (token: string) => {
         const userId = jwtDataGetters.getUserId(token);
-        const { password, ...user } = await userRep.getUserByUserId(userId);
+        const { hasShareBonus, password, questionsCount, ...user } = await userRep.getUserByUserId(userId);
         return user;
+    }
+
+    changeUser = async (token: string, name?: string, phone?: string, email?: string, password?: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+
+        if (email !== undefined) {
+            const user = await userRep.getUserByEmail(email);
+            if (user !== undefined) {
+                return { isEmailOccupied: true };
+            }
+        }
+
+        let hashedPassword: string | undefined;
+        if (password !== undefined) {
+            const saltRounds = Number(process.env.SALT_ROUNDS);
+            hashedPassword = await bcrypt.hash(password, saltRounds);
+        }
+
+        const modUserInfo = await userRep.changeUserById(userId, name, phone, email, hashedPassword);
+
+        return {
+            "name": name === undefined ? name : modUserInfo.name,
+            "phone": phone === undefined ? phone : modUserInfo.phone,
+            "email": email === undefined ? email : modUserInfo.email,
+            isEmailOccupied: false
+        };
     }
 
     changeName = async (token: string, name: string) => {
@@ -166,15 +198,46 @@ class UserService {
         }
     }
 
-    addQuestions = async (token: string, quantity: number) => {
+    shareBonus = async (token: string, quantity: number, shareUrl: string) => {
         const userId = jwtDataGetters.getUserId(token);
-        const { questionsCount } = await userRep.getUserByUserId(userId);
-        await userRep.changeQuestionsCountByUserId(userId, questionsCount - quantity);
+        const { hasShareBonus, questionsCount } = await userRep.getUserByUserId(userId);
+
+        if (hasShareBonus === false) {
+            return { hasShareBonus };
+        }
+
+        const { isUrlValid } = await this.checkShareUrl(shareUrl);
+
+        if (isUrlValid) {
+            await userRep.changeQuestionsCountByUserId(userId, questionsCount - quantity);
+            await userRep.changeHasShareBonusByUserId(userId, false);
+            return { isShareBonusGranted: true }
+        }
+        else {
+            return { isUrlValid }
+        }
     }
 
-    getMessagesByFamousPerson = async (famousPersonName: string, token: string) => {
+    checkShareUrl = async (shareUrl: string) => {
+        return { isUrlValid: true };
+        try {
+            const res = await axios.get(shareUrl);
+            const { FRONTEND_ORIGIN } = process.env;
+            const index = String(res.data).search(FRONTEND_ORIGIN!);
+            if (index === -1) {
+                return { isUrlValid: false };
+            }
+            return { isUrlValid: true };
+        }
+        catch (error) {
+            return { isUrlValid: false };
+        }
+    }
+
+    getMessagesByFamousPerson = async (famousPersonName: string, token: string, page: number, limit: number) => {
         const userId = jwtDataGetters.getUserId(token);
-        const messages = await userRep.getMessagesByFamousPerson(famousPersonName.toUpperCase(), userId);
+        const offset = (page - 1) * limit;
+        const messages = await userRep.getMessagesByFamousPerson(famousPersonName.toUpperCase(), userId, offset, limit);
         return messages;
     }
 
@@ -205,7 +268,7 @@ class UserService {
             const userId = jwtDataGetters.getUserId(token);
             const user = await userRep.getUserByUserId(userId);
 
-            if (user.subscriptionId === 1 && user.subscriptionExpireDate < new Date()) {
+            if (user.subscriptionId === 1 && user.subscriptionExpireDate! < new Date()) {
                 user.subscriptionId = 0;
                 await userRep.changeSubscriptionByUserId(userId, 0);
             }
