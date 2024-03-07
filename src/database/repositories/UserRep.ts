@@ -130,6 +130,10 @@ class UserRep {
             returning({ email: users.email });
     }
 
+    changeStripeCustomerIdByUserId = async (userId: number, stripeCustomerId: string) => {
+        await this.dbClient.update(users).set({ stripeCustomerId }).where(eq(users.userId, userId));
+    }
+
     changePasswordByUserId = async (userId: number, password: string) => {
         await this.dbClient.update(users).set({ password }).where(eq(users.userId, userId));
     }

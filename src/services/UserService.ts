@@ -62,7 +62,7 @@ class UserService {
                     JWT_SECRET, options);
 
                 const {
-                    password, hasShareBonus, questionsCount, ...userInfo
+                    password, hasShareBonus, questionsCount, stripeCustomerId, ...userInfo
                 } = user;
 
                 return {
@@ -124,7 +124,7 @@ class UserService {
 
     getUser = async (token: string) => {
         const userId = jwtDataGetters.getUserId(token);
-        const { hasShareBonus, password, questionsCount, ...user } = await userRep.getUserByUserId(userId);
+        const { hasShareBonus, password, questionsCount, stripeCustomerId, ...user } = await userRep.getUserByUserId(userId);
         return user;
     }
 
@@ -192,15 +192,19 @@ class UserService {
         await userRep.changePasswordByUserId(userId, hashedPassword);
     }
 
-    changeSubscription = async (token: string, subscriptionId: number) => {
-        const userId = jwtDataGetters.getUserId(token);
+    changeSubscription = async (subscriptionId: number, token?: string, userId?: number) => {
+        if (token !== undefined || userId !== undefined) {
+            if (token !== undefined) {
+                userId = jwtDataGetters.getUserId(token);
+            }
 
-        await userRep.changeSubscriptionByUserId(userId, subscriptionId);
-        if (subscriptionId === 1) {
-            const now = new Date();
-            const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
-            // const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
-            await userRep.changeSubscriptionExpireDateByUserId(userId, nowPlus1Mon);
+            await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
+            if (subscriptionId === 1) {
+                const now = new Date();
+                const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
+                // const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
+                await userRep.changeSubscriptionExpireDateByUserId(userId!, nowPlus1Mon);
+            }
         }
     }
 

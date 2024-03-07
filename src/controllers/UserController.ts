@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import userService from "../services/UserService";
 import googleOAuthService from "services/GoogleOAuthService";
+import stripeSevice from "services/StripeSevice";
 
 
 class ClientController {
@@ -183,7 +184,7 @@ class ClientController {
             const subscriptionId = Number(req.body.subscriptionId);
             const token = req.headers.authorization;
 
-            await userService.changeSubscription(token!, subscriptionId);
+            await userService.changeSubscription(subscriptionId, token!);
             res.status(200).json({ message: "subscription was successfully changed." })
         }
         catch (error) {
@@ -191,22 +192,11 @@ class ClientController {
         }
     }
 
-    stripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
+    getStripeSessionUrl = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const event = req.body;
-
-            switch (event.type) {
-                case 'payment_intent.succeeded':
-                    const paymentIntent = event.data.object;
-                    console.log("payment_intent.succeeded.");
-                    break;
-
-                default:
-                    console.log(`Unhandled event type ${event.type}`);
-            }
-
-            res.json({ received: true });
-
+            const token = req.headers.authorization;
+            const { sessionUrl } = await stripeSevice.createCheckoutSession(token!);
+            res.status(200).json({ sessionUrl });
         } catch (error) {
             next(error);
         }

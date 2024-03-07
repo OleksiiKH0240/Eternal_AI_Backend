@@ -3,6 +3,7 @@ import "utils/checks";
 import express from "express";
 import cors from "cors";
 import userRouter from "./routers/UserRouter";
+import stripeRouter from "routers/StripeRouter";
 import initialRep from "./database/repositories"
 import errorHandlers from "middlewares/ErrorHandlers";
 import UserService from "services/UserService";
@@ -15,8 +16,9 @@ const corsOptions: cors.CorsOptions = {
     origin: allowedOrigins
 }
 app.use(cors(corsOptions));
-app.use(express.json());
 
+app.use(stripeRouter);
+app.use(express.json());
 app.use(userRouter);
 
 app.use(errorHandlers.errorLogger);

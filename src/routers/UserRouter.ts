@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, raw } from "express";
 import userController from "../controllers/UserController";
 import { authenticate, authenticateFrontendUser } from "../middlewares/Authentication"
 import userMiddlewares from "middlewares/UserMiddlewares";
@@ -31,6 +31,7 @@ userRouter.get("/user",
 
 userRouter.put("/user",
     authenticate,
+    userMiddlewares.validateChangeUser,
     userController.changeUser
 );
 
@@ -58,8 +59,9 @@ userRouter.put("/password",
     userController.changePassword
 );
 
-userRouter.post("/stripe-webhook",
-    userController.stripeWebhook
+userRouter.get("/stripe-session-url",
+    authenticate,
+    userController.getStripeSessionUrl
 );
 
 userRouter.put("/subscription",
@@ -77,6 +79,7 @@ userRouter.put("/share-bonus",
 
 userRouter.get("/messages-by-famous-person",
     authenticate,
+    userMiddlewares.validateGetMessages,
     userController.getMessagesByFamousPerson
 );
 
