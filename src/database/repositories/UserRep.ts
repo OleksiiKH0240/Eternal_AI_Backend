@@ -1,7 +1,7 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { db } from "../databaseConnection"
 import users from "../schemas/users";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import famousPeople from "../schemas/famousPeople";
 import chats from "../schemas/chats";
 import messages from "../schemas/messages";
@@ -181,7 +181,8 @@ class UserRep {
         }).
             from(messages).
             innerJoin(filteredChats, eq(filteredChats.chatId, messages.chatId)).
-            innerJoin(users, eq(users.userId, filteredChats.userId));
+            innerJoin(users, eq(users.userId, filteredChats.userId)).
+            orderBy(desc(messages.messageId));
         // innerJoin(famousPeople, eq(famousPeople.famousPersonId, filteredChats.famousPersonId));
 
         const result = (offset !== undefined && limit !== undefined) ?

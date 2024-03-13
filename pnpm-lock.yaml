@@ -33,8 +33,8 @@ dependencies:
     specifier: ^8.11.3
     version: 8.11.3
   stripe:
-    specifier: ^14.19.0
-    version: 14.19.0
+    specifier: ^14.20.0
+    version: 14.20.0
 
 devDependencies:
   '@types/bcrypt':
@@ -2110,8 +2110,8 @@ packages:
       ansi-regex: 5.0.1
     dev: false
 
-  /stripe@14.19.0:
-    resolution: {integrity: sha512-Je2USTpUib3hApIgoHXViLoYkDLp+AXdUJvJ6aMQ/AcvZK1PcC7N8nTceh+0gpdotX8izlWN4QyVdMcptubHBQ==}
+  /stripe@14.20.0:
+    resolution: {integrity: sha512-+3EP8GSWnKVHNATChhDzwAKk3nqSJKQOf2Q+dMGdgEk2sQXWYoA8GXY0A1TjL0m6895FVNavgvno6+0+6lC+kw==}
     engines: {node: '>=12.*'}
     dependencies:
       '@types/node': 20.11.19

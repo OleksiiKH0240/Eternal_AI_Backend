@@ -195,8 +195,8 @@ class ClientController {
     getStripeSessionUrl = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization;
-            const { sessionUrl } = await stripeSevice.createCheckoutSession(token!);
-            res.status(200).json({ sessionUrl });
+            const { paymentMethod } = await stripeSevice.createCheckoutSession(token!);
+            res.status(200).json(paymentMethod);
         } catch (error) {
             next(error);
         }

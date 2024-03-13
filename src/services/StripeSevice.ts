@@ -14,6 +14,22 @@ class StripeSevice {
     }
 
     createCheckoutSession = async (token: string) => {
+
+        const cardToken = await stripe.tokens.create({
+            card: {
+                number: "4242424242424242",
+                exp_month: "8",
+                exp_year: "2026",
+                cvc: '314'
+            }
+        });
+
+        // const paymentMethod = await stripe.paymentMethods.create({
+        //     type: "card",
+
+        // });
+
+
         const userId = jwtDataGetters.getUserId(token);
         let { stripeCustomerId, email, name, phone } = await userRep.getUserByUserId(userId);
         if (stripeCustomerId !== null) {
@@ -23,6 +39,7 @@ class StripeSevice {
                     // name: name === null ? undefined : name,
                     phone: phone === null ? undefined : phone
                 });
+
         }
         else {
             const customer = await stripe.customers.create({
@@ -36,24 +53,35 @@ class StripeSevice {
             await userRep.changeStripeCustomerIdByUserId(userId, stripeCustomerId);
         }
 
-        const { PRODUCT_API_ID, STRIPE_SUCCESS_URL, STRIPE_CANCEL_URL } = process.env;
-        const session = await stripe.checkout.sessions.create({
-            success_url: STRIPE_SUCCESS_URL,
-            cancel_url: STRIPE_CANCEL_URL,
-            line_items: [
-                {
-                    price: PRODUCT_API_ID,
-                    quantity: 1
-                }
-            ],
-            customer: stripeCustomerId,
-            customer_update: { name: "auto", address: "auto" },
-            metadata: { userId },
-            mode: "payment"
-        });
+        const { PRODUCT_API_ID } = process.env;
+        const product = await stripe.products.retrieve(PRODUCT_API_ID!);
+        const productPrice = product.default_price as string;
+        // console.log("product", product);
 
+
+
+
+        // const updateCustomerDefaultPaymentMethod = await stripe.customers.update(
+        //     customer.id, { // <-- your customer id from the request body
+
+        //       invoice_settings: {
+        //         default_payment_method: paymentMethod.id, // <-- your payment method ID collected via Stripe.js
+        //       },
+        //   });
+
+        // await stripe.paymentMethods.attach(paymentMethod.id, { customer: stripeCustomerId });
+
+        // await stripe.subscriptions.create({
+        //     customer: stripeCustomerId,
+        //     items: [
+        //         {
+        //             price: productPrice
+        //         }
+        //     ]
+
+        // });
         // console.log(session);
-        return { sessionUrl: session.url };
+        return { paymentMethod: "" };
     }
 
     activateSubscription = async (stripeCustomerId: string) => {

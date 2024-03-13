@@ -5,7 +5,7 @@ import googleAuthOptionsCheck from "./googleAuthOptionsCheck";
 import stripeOptionsCheck from "./stripeOptionsCheck";
 
 
-const envVarsCheck = () => {
+const envVarsCheck = async () => {
     const { PORT, FRONTEND_ORIGIN, FRONTEND_USER_PASSWORD } = process.env;
 
     if (PORT === undefined ||
@@ -19,7 +19,7 @@ const envVarsCheck = () => {
     databaseOptionsCheck();
     googleAuthOptionsCheck();
     chatGptOptionsCheck();
-    stripeOptionsCheck();
+    await stripeOptionsCheck();
 }
 
 export default envVarsCheck();
