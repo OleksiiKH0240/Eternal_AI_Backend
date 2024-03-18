@@ -1,6 +1,6 @@
 import { Router, raw } from "express";
 import userController from "../controllers/UserController";
-import { authenticate, authenticateFrontendUser } from "../middlewares/Authentication"
+import { authenticate, authenticateFrontendUser, validateGoogleAuth } from "../middlewares/Authentication"
 import userMiddlewares from "middlewares/UserMiddlewares";
 
 
@@ -16,11 +16,8 @@ userRouter.post("/log-in",
     userController.logIn
 );
 
-userRouter.get("/oauth/google/url",
-    userController.oauthGoogleUrl
-);
-
-userRouter.get("/oauth/google",
+userRouter.post("/oauth/google",
+    validateGoogleAuth,
     userController.oauthGoogle
 );
 

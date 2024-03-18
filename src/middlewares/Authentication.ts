@@ -48,3 +48,23 @@ export const authenticateFrontendUser = async (req: Request, res: Response, next
     }
 }
 
+export const validateGoogleAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const { user: googleUserToken } = req.body;
+
+    if (googleUserToken === undefined) {
+        res.status(401).json({
+            message: "no google user token was provided."
+        });
+    }
+    else {
+        const { GOOGLE_CLIENT_SECRET } = process.env;
+
+        try {
+            jwt.verify(googleUserToken, GOOGLE_CLIENT_SECRET!);
+            next();
+        }
+        catch (error) {
+            res.status(401).json({ message: "Invalid token." });
+        }
+    }
+}
