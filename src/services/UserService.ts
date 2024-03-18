@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
-import googleOAuthService from "./GoogleOAuthService";
+import crypto from "crypto";
 import axios from "axios";
 
 
@@ -89,21 +89,14 @@ class UserService {
         }
     }
 
-    oauthGoogle = async (code: string) => {
-        let id_token;
-        try {
-            ({ id_token } = await googleOAuthService.getGoogleOAuthTokens(code));
-        }
-        catch (error) {
-            console.log(error);
-            return { id_token: undefined };
-        }
-        const { email, name, password } = googleOAuthService.getUserFromIdToken(id_token);
+    oauthGoogle = async (googleUserToken: string) => {
+        const googleUser = jwtDataGetters.getGoogleUser(googleUserToken);
 
-        const user = await userRep.getUserByEmail(email);
+        const user = await userRep.getUserByEmail(googleUser.email);
         let userId: number;
         if (user === undefined) {
-            ({ userId } = await userRep.addUser(email, password, name));
+            const password = crypto.randomBytes(12).toString("hex");
+            ({ userId } = await userRep.addUser(googleUser.email, password, googleUser.name));
         }
         else {
             userId = user.userId;
