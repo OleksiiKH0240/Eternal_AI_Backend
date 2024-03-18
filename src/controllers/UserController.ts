@@ -42,22 +42,22 @@ class ClientController {
         }
     }
 
-    oauthGoogleUrl = async ({ res, next }: { res: Response, next: NextFunction }) => {
-        try {
-            res.status(200).json({ url: googleOAuthService.getGoogleOAuthUrl() });
-        }
-        catch (error) {
-            next(error);
-        }
-    }
+    // oauthGoogleUrl = async ({ res, next }: { res: Response, next: NextFunction }) => {
+    //     try {
+    //         res.status(200).json({ url: googleOAuthService.getGoogleOAuthUrl() });
+    //     }
+    //     catch (error) {
+    //         next(error);
+    //     }
+    // }
 
     oauthGoogle = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const googleUserToken = req.body.user;
 
-            const { token } = await userService.oauthGoogle(googleUserToken!);
+            const { token, userInfo } = await userService.oauthGoogle(googleUserToken!);
 
-            return res.status(200).json({ token, message: "user was successfully authorized." });
+            return res.status(200).json({ message: "user was successfully authorized.", token, userInfo });
         }
         catch (error) {
             next(error);

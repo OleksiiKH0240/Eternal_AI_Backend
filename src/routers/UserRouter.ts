@@ -1,6 +1,6 @@
 import { Router, raw } from "express";
 import userController from "../controllers/UserController";
-import { authenticate, authenticateFrontendUser, validateGoogleAuth } from "../middlewares/Authentication"
+import { authenticate, validateGoogleAuth } from "../middlewares/Authentication"
 import userMiddlewares from "middlewares/UserMiddlewares";
 
 
@@ -56,16 +56,21 @@ userRouter.put("/password",
     userController.changePassword
 );
 
-userRouter.get("/stripe-session-url",
-    authenticate,
-    userController.getStripeSessionUrl
-);
+// userRouter.get("/stripe-session-url",
+//     authenticate,
+//     userController.getStripeSessionUrl
+// );
 
-userRouter.put("/subscription",
-    authenticateFrontendUser,
+// userRouter.put("/subscription",
+//     authenticateFrontendUser,
+//     authenticate,
+//     userMiddlewares.validateChangeSubscription,
+//     userController.changeSubscription
+// );
+
+userRouter.post("/create-subscription",
     authenticate,
-    userMiddlewares.validateChangeSubscription,
-    userController.changeSubscription
+    // userController.createSubscription
 );
 
 userRouter.put("/share-bonus",

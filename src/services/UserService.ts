@@ -57,7 +57,7 @@ class UserService {
                 const token = jwt.sign(
                     {
                         userId: user.userId,
-                        subscriptionId: user.subscriptionId
+                        // subscriptionId: user.subscriptionId
                     },
                     JWT_SECRET, options);
 
@@ -92,15 +92,20 @@ class UserService {
     oauthGoogle = async (googleUserToken: string) => {
         const googleUser = jwtDataGetters.getGoogleUser(googleUserToken);
 
-        const user = await userRep.getUserByEmail(googleUser.email);
+        let user = await userRep.getUserByEmail(googleUser.email);
         let userId: number;
         if (user === undefined) {
-            const password = crypto.randomBytes(12).toString("hex");
-            ({ userId } = await userRep.addUser(googleUser.email, password, googleUser.name));
+            const tempPassword = crypto.randomBytes(12).toString("hex");
+            user = await userRep.addUser(googleUser.email, tempPassword, googleUser.name);
+            userId = user.userId;
         }
         else {
             userId = user.userId;
         }
+
+        const {
+            password, hasShareBonus, questionsCount, stripeCustomerId, ...userInfo
+        } = user;
 
         const ttl = Number(process.env.JWT_TTL);
         const JWT_SECRET = String(process.env.JWT_SECRET);
@@ -111,7 +116,7 @@ class UserService {
             JWT_SECRET, { expiresIn: ttl });
 
         return {
-            token
+            token, userInfo
         };
     }
 

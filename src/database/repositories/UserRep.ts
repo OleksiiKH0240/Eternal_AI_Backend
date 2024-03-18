@@ -87,7 +87,7 @@ class UserRep {
             password,
             phone,
             name
-        }).returning({ userId: users.userId });
+        }).returning();
 
         return result[0];
     }
