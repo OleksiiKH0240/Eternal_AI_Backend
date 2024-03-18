@@ -164,27 +164,38 @@ class ClientController {
         }
     }
 
-    changeSubscription = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            console.log(req.headers);
-            console.log(req.header("Origin"));
-            const subscriptionId = Number(req.body.subscriptionId);
-            const token = req.headers.authorization;
+    // changeSubscription = async (req: Request, res: Response, next: NextFunction) => {
+    //     try {
+    //         console.log(req.headers);
+    //         console.log(req.header("Origin"));
+    //         const subscriptionId = Number(req.body.subscriptionId);
+    //         const token = req.headers.authorization;
 
-            await userService.changeSubscription(subscriptionId, token!);
-            res.status(200).json({ message: "subscription was successfully changed." })
+    //         await userService.changeSubscription(subscriptionId, token!);
+    //         res.status(200).json({ message: "subscription was successfully changed." })
+    //     }
+    //     catch (error) {
+    //         next(error);
+    //     }
+    // }
+
+    // getStripeSessionUrl = async (req: Request, res: Response, next: NextFunction) => {
+    //     try {
+    //         const token = req.headers.authorization;
+    //         const { paymentMethod } = await stripeSevice.createCheckoutSession(token!);
+    //         res.status(200).json(paymentMethod);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
+
+    createSubscription = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const subscription = await stripeSevice.createSubscription(token!);
+            res.json(subscription);
         }
         catch (error) {
-            next(error);
-        }
-    }
-
-    getStripeSessionUrl = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const token = req.headers.authorization;
-            const { paymentMethod } = await stripeSevice.createCheckoutSession(token!);
-            res.status(200).json(paymentMethod);
-        } catch (error) {
             next(error);
         }
     }

@@ -70,7 +70,7 @@ userRouter.put("/password",
 
 userRouter.post("/create-subscription",
     authenticate,
-    // userController.createSubscription
+    userController.createSubscription
 );
 
 userRouter.put("/share-bonus",

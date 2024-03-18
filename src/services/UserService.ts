@@ -8,15 +8,6 @@ import axios from "axios";
 
 
 class UserService {
-    init = async () => {
-        const { FRONTEND_ORIGIN } = process.env;
-        const email = `frontendUser@${FRONTEND_ORIGIN?.replace(/(http)s?:\/\//, "")}`;
-        const { FRONTEND_USER_PASSWORD: password } = process.env;
-
-        const { userId } = await this.signUp(email, password!, "frontendUser");
-        await userRep.changeSubscriptionByUserId(userId, -1);
-    }
-
     signUp = async (email: string, password: string, name?: string) => {
         const user = await userRep.getUserByEmail(email);
         if (user === undefined) {
@@ -190,12 +181,8 @@ class UserService {
         await userRep.changePasswordByUserId(userId, hashedPassword);
     }
 
-    changeSubscription = async (subscriptionId: number, token?: string, userId?: number) => {
-        if (token !== undefined || userId !== undefined) {
-            if (token !== undefined) {
-                userId = jwtDataGetters.getUserId(token);
-            }
-
+    changeSubscription = async (subscriptionId: number, userId?: number) => {
+        if (userId !== undefined) {
             await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
             if (subscriptionId === 1) {
                 const now = new Date();

@@ -9,10 +9,15 @@ class StripeController {
             const event = JSON.parse(req.body);
 
             switch (event.type) {
-                case 'checkout.session.completed':
+                // case 'checkout.session.completed':
+                //     const stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
+                //     await stripeSevice.activateSubscription(stripeCustomerId);
+
+                //     break;
+                case "invoice.paid":
+                    console.log("invoice was paid.");
                     const stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
                     await stripeSevice.activateSubscription(stripeCustomerId);
-
                     break;
 
                 default:

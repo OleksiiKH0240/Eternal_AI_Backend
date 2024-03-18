@@ -13,33 +13,16 @@ class StripeSevice {
         return event;
     }
 
-    createCheckoutSession = async (token: string) => {
-
-        const cardToken = await stripe.tokens.create({
-            card: {
-                number: "4242424242424242",
-                exp_month: "8",
-                exp_year: "2026",
-                cvc: '314'
-            }
-        });
-
-        // const paymentMethod = await stripe.paymentMethods.create({
-        //     type: "card",
-
-        // });
-
-
+    createSubscription = async (token: string) => {
         const userId = jwtDataGetters.getUserId(token);
         let { stripeCustomerId, email, name, phone } = await userRep.getUserByUserId(userId);
         if (stripeCustomerId !== null) {
             await stripe.customers.update(stripeCustomerId,
                 {
                     email,
-                    // name: name === null ? undefined : name,
+                    name: name === null ? undefined : name,
                     phone: phone === null ? undefined : phone
                 });
-
         }
         else {
             const customer = await stripe.customers.create({
@@ -56,40 +39,102 @@ class StripeSevice {
         const { PRODUCT_API_ID } = process.env;
         const product = await stripe.products.retrieve(PRODUCT_API_ID!);
         const productPrice = product.default_price as string;
-        // console.log("product", product);
 
+        const subscription = await stripe.subscriptions.create({
+            customer: stripeCustomerId,
+            items: [{
+                price: productPrice,
+            }],
+            payment_behavior: 'default_incomplete',
+            payment_settings: { save_default_payment_method: 'on_subscription', payment_method_types: ["card"] },
+            expand: ['latest_invoice.payment_intent'],
+        });
 
+        return {
+            subscriptionId: subscription.id,
+            clientSecret: ((subscription.latest_invoice as Stripe.Invoice)
+                .payment_intent as Stripe.PaymentIntent).client_secret
+        };
 
-
-        // const updateCustomerDefaultPaymentMethod = await stripe.customers.update(
-        //     customer.id, { // <-- your customer id from the request body
-
-        //       invoice_settings: {
-        //         default_payment_method: paymentMethod.id, // <-- your payment method ID collected via Stripe.js
-        //       },
-        //   });
-
-        // await stripe.paymentMethods.attach(paymentMethod.id, { customer: stripeCustomerId });
-
-        // await stripe.subscriptions.create({
-        //     customer: stripeCustomerId,
-        //     items: [
-        //         {
-        //             price: productPrice
-        //         }
-        //     ]
-
-        // });
-        // console.log(session);
-        return { paymentMethod: "" };
     }
+
+    // createCheckoutSession = async (token: string) => {
+
+    //     const cardToken = await stripe.tokens.create({
+    //         card: {
+    //             number: "4242424242424242",
+    //             exp_month: "8",
+    //             exp_year: "2026",
+    //             cvc: '314'
+    //         }
+    //     });
+
+    //     // const paymentMethod = await stripe.paymentMethods.create({
+    //     //     type: "card",
+
+    //     // });
+
+
+    //     const userId = jwtDataGetters.getUserId(token);
+    //     let { stripeCustomerId, email, name, phone } = await userRep.getUserByUserId(userId);
+    //     if (stripeCustomerId !== null) {
+    //         await stripe.customers.update(stripeCustomerId,
+    //             {
+    //                 email,
+    //                 // name: name === null ? undefined : name,
+    //                 phone: phone === null ? undefined : phone
+    //             });
+
+    //     }
+    //     else {
+    //         const customer = await stripe.customers.create({
+    //             email,
+    //             name: name === null ? undefined : name,
+    //             phone: phone === null ? undefined : phone,
+    //             metadata: { userId }
+    //         });
+
+    //         stripeCustomerId = customer.id;
+    //         await userRep.changeStripeCustomerIdByUserId(userId, stripeCustomerId);
+    //     }
+
+    //     const { PRODUCT_API_ID } = process.env;
+    //     const product = await stripe.products.retrieve(PRODUCT_API_ID!);
+    //     const productPrice = product.default_price as string;
+    //     // console.log("product", product);
+
+
+
+
+    //     // const updateCustomerDefaultPaymentMethod = await stripe.customers.update(
+    //     //     customer.id, { // <-- your customer id from the request body
+
+    //     //       invoice_settings: {
+    //     //         default_payment_method: paymentMethod.id, // <-- your payment method ID collected via Stripe.js
+    //     //       },
+    //     //   });
+
+    //     // await stripe.paymentMethods.attach(paymentMethod.id, { customer: stripeCustomerId });
+
+    //     // await stripe.subscriptions.create({
+    //     //     customer: stripeCustomerId,
+    //     //     items: [
+    //     //         {
+    //     //             price: productPrice
+    //     //         }
+    //     //     ]
+
+    //     // });
+    //     // console.log(session);
+    //     return { paymentMethod: "" };
+    // }
 
     activateSubscription = async (stripeCustomerId: string) => {
         const { userId } = (
             (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
         ).metadata as unknown as { userId: number };
 
-        await userService.changeSubscription(1, undefined, userId);
+        await userService.changeSubscription(1, userId);
     }
 }
 
