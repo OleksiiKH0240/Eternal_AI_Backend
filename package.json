@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"generate": "drizzle-kit generate:pg",
-		"dev": "npx puppeteer browsers install chrome && tsx ./src/app.ts",
+		"dev": "tsx ./src/app.ts",
 		"dev_watch": "tsx --watch ./src/app.ts"
 	},
 	"dependencies": {
