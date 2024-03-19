@@ -241,7 +241,7 @@ class UserService {
             const encodedFrontendOrigin = encodeURIComponent(FRONTEND_ORIGIN!);
 
             const regexp = new RegExp(`${encodedFrontendOrigin}|${FRONTEND_ORIGIN?.replace("https://", "https:\/\/")}`);
-            // console.log(regexp);
+            console.log(regexp);
 
             const index = String(urlText).search(regexp);
             if (index === -1) {
