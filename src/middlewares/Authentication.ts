@@ -57,14 +57,35 @@ export const validateGoogleAuth = async (req: Request, res: Response, next: Next
         });
     }
     else {
-        const { GOOGLE_CLIENT_SECRET } = process.env;
+        const { CLIENT_SECRET } = process.env;
 
         try {
-            jwt.verify(googleUserToken, GOOGLE_CLIENT_SECRET!);
+            jwt.verify(googleUserToken, CLIENT_SECRET!);
             next();
         }
         catch (error) {
-            res.status(401).json({ message: "Invalid token." });
+            res.status(401).json({ message: "Invalid googleUserToken." });
+        }
+    }
+}
+
+export const validateUnauthorizedUserMessage = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization;
+    const { ipV4UserAgentToken } = req.body;
+
+    if (token === undefined) {
+        if (ipV4UserAgentToken === undefined) {
+            return res.status(400).json({ message: "no ipV4UserAgentToken was provided." });
+        } else {
+            const { CLIENT_SECRET } = process.env;
+
+            try {
+                jwt.verify(ipV4UserAgentToken, CLIENT_SECRET!);
+                next();
+            }
+            catch (error) {
+                res.status(401).json({ message: "Invalid ipV4UserAgentToken." });
+            }
         }
     }
 }

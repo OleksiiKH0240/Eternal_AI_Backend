@@ -39,6 +39,12 @@ class jwtDataGetters {
 
         return googleUser;
     }
+
+    getIpV4UserAgent = (jwtToken: string) => {
+        const { ipV4, userAgent } = jwt.decode(jwtToken.replace(/Bearer */, "")) as { ipV4: string, userAgent: string };
+
+        return { ipV4, userAgent };
+    }
 }
 
 export default new jwtDataGetters();

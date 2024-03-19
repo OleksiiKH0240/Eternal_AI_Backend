@@ -1,6 +1,6 @@
 import { Router, raw } from "express";
 import userController from "../controllers/UserController";
-import { authenticate, validateGoogleAuth } from "../middlewares/Authentication"
+import { authenticate, validateGoogleAuth, validateUnauthorizedUserMessage } from "../middlewares/Authentication"
 import userMiddlewares from "middlewares/UserMiddlewares";
 
 
@@ -91,6 +91,7 @@ userRouter.get("/messages-by-famous-person",
 );
 
 userRouter.post("/message",
+    validateUnauthorizedUserMessage,
     userMiddlewares.validateAnswerMessage,
     userController.answerMessage
 );
