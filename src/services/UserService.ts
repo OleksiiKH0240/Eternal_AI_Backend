@@ -223,7 +223,7 @@ class UserService {
         // return { isUrlValid: true };
         let browser;
         try {
-            browser = await pupputeer.launch();
+            browser = await pupputeer.launch({ args: ["--no-sandbox"] });
             const page = await browser.newPage();
 
             const res = await page.goto(shareUrl, { waitUntil: "domcontentloaded" });
