@@ -5,6 +5,7 @@ import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
 import crypto from "crypto";
 import axios from "axios";
+import pupputeer from "puppeteer";
 
 
 class UserService {
@@ -219,17 +220,40 @@ class UserService {
     }
 
     checkShareUrl = async (shareUrl: string) => {
-        return { isUrlValid: true };
+        // return { isUrlValid: true };
+        let browser;
         try {
-            const res = await axios.get(shareUrl);
+            browser = await pupputeer.launch();
+            const page = await browser.newPage();
+
+            const res = await page.goto(shareUrl, { waitUntil: "domcontentloaded" });
+            // await page.waitForNetworkIdle();
+
+            if (res === null) {
+                return { isUrlValid: false };
+            }
+
+            // const res = await fetch(shareUrl);
+            const urlText = await res?.text();
+            // console.log(urlText);
+
             const { FRONTEND_ORIGIN } = process.env;
-            const index = String(res.data).search(FRONTEND_ORIGIN!);
+            const encodedFrontendOrigin = encodeURIComponent(FRONTEND_ORIGIN!);
+
+            const regexp = new RegExp(`${encodedFrontendOrigin}|${FRONTEND_ORIGIN?.replace("https://", "https:\/\/")}`);
+            // console.log(regexp);
+
+            const index = String(urlText).search(regexp);
             if (index === -1) {
                 return { isUrlValid: false };
             }
+
+            await browser.close();
             return { isUrlValid: true };
         }
         catch (error) {
+            await browser?.close();
+            // console.log(error);
             return { isUrlValid: false };
         }
     }
