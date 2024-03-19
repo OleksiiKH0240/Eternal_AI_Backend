@@ -200,6 +200,22 @@ class ClientController {
         }
     }
 
+    cancelSubscription = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const { isCanceled, Exists } = await stripeSevice.cancelSubscriptionByUser(token!);
+            if (Exists === true && isCanceled === true) {
+                res.status(200).json({ message: "subscription was canceled successfully." });
+            }
+            else {
+                res.status(400).json({ message: "you have no subscription to cancel." });
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     shareBonus = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const quantity = 3;

@@ -73,6 +73,11 @@ userRouter.post("/create-subscription",
     userController.createSubscription
 );
 
+userRouter.post("/cancel-subscription",
+    authenticate,
+    userController.cancelSubscription
+);
+
 userRouter.put("/share-bonus",
     authenticate,
     userMiddlewares.validateShareBonus,

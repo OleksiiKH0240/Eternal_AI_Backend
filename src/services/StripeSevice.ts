@@ -136,6 +136,43 @@ class StripeSevice {
 
         await userService.changeSubscription(1, userId);
     }
+
+    cancelSubscriptionByStripe = async (stripeCustomerId: string) => {
+        const { userId } = (
+            (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
+        ).metadata as unknown as { userId: number };
+
+        await userService.changeSubscription(0, userId);
+    }
+
+    cancelSubscriptionByUser = async (token: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+        let { stripeCustomerId } = await userRep.getUserByUserId(userId);
+
+        const { PRODUCT_API_ID } = process.env;
+        const product = await stripe.products.retrieve(PRODUCT_API_ID!);
+        const productPrice = product.default_price as string;
+
+        if (stripeCustomerId !== null) {
+            const subscription = (await stripe.subscriptions.list({
+                limit: 10,
+                status: "active",
+                price: productPrice,
+                customer: stripeCustomerId
+            })).data[0];
+
+            await stripe.subscriptions.cancel(subscription.id);
+
+            return {
+                Exists: true,
+                isCanceled: true
+            };
+        }
+        return {
+            Exists: false,
+            isCanceled: true
+        };
+    }
 }
 
 export default new StripeSevice();

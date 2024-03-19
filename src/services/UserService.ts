@@ -190,6 +190,11 @@ class UserService {
                 // const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
                 await userRep.changeSubscriptionExpireDateByUserId(userId!, nowPlus1Mon);
             }
+
+            if (subscriptionId === 0) {
+                await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
+                await userRep.changeSubscriptionExpireDateByUserId(userId!, null);
+            }
         }
     }
 
@@ -264,8 +269,10 @@ class UserService {
             const user = await userRep.getUserByUserId(userId);
 
             if (user.subscriptionId === 1 && user.subscriptionExpireDate! < new Date()) {
+                // TODO: I already have had stripe webhook to cancel subscription whether it was not paid, so maybe this part is irrelevant. 
                 user.subscriptionId = 0;
-                await userRep.changeSubscriptionByUserId(userId, 0);
+                await this.changeSubscription(0, userId);
+                // await userRep.changeSubscriptionByUserId(userId, 0);
             }
 
             if (user.subscriptionId === 0) {

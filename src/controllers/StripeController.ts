@@ -7,6 +7,7 @@ class StripeController {
     stripeWebhook = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const event = JSON.parse(req.body);
+            let stripeCustomerId;
 
             switch (event.type) {
                 // case 'checkout.session.completed':
@@ -16,9 +17,14 @@ class StripeController {
                 //     break;
                 case "invoice.paid":
                     console.log("invoice was paid.");
-                    const stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
+                    stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
                     await stripeSevice.activateSubscription(stripeCustomerId);
                     break;
+
+                case "customer.subscription.deleted":
+                    console.log("customer subscription was deleted.");
+                    stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
+                    await stripeSevice.cancelSubscriptionByStripe(stripeCustomerId);
 
                 default:
                     console.log(`Unhandled event type ${event.type}`);
