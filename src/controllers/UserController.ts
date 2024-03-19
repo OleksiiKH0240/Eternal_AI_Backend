@@ -66,7 +66,7 @@ class ClientController {
 
     getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log(req);
+            // console.log(req);
             const token = req.headers.authorization;
             const user = await userService.getUser(token!);
             res.status(200).json(user);
@@ -262,10 +262,10 @@ class ClientController {
     answerMessage = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization;
-            const message = req.body.message;
-            const famousPersonName = req.body.famousPersonName;
+            const { message, famousPersonName } = req.body;
+            const { ipV4, userAgent } = req.body;
 
-            const { isQuestionAllowed, isLimitReached, answer } = await userService.answerMessage(token, message, famousPersonName);
+            const { isQuestionAllowed, isLimitReached, answer } = await userService.answerMessage(token, message, famousPersonName, ipV4, userAgent);
             if (isQuestionAllowed === false) {
                 return res.status(400).json({ message: "your message is not allowed." });
             }

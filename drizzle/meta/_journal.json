@@ -29,6 +29,20 @@
       "when": 1709764346239,
       "tag": "0003_elite_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1710873640435,
+      "tag": "0004_brave_moira_mactaggert",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1710874158628,
+      "tag": "0005_damp_prodigy",
+      "breakpoints": true
     }
   ]
 }

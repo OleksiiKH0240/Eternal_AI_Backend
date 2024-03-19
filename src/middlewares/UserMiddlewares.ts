@@ -109,6 +109,12 @@ class UserMiddlewares {
             return res.status(400).json({ message: "famous person with this name does not exist." });
         }
 
+        const token = req.headers.authorization;
+        const { ipV4, userAgent } = req.body;
+        if (token === undefined && (ipV4 === undefined || userAgent === undefined)) {
+            return res.status(400).json({ message: "for unauthorized user you must specify ipV4 and userAgent." });
+        }
+
         next();
     }
 }

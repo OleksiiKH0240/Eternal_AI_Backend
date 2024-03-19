@@ -7,6 +7,7 @@ import crypto from "crypto";
 import axios from "axios";
 // import pupputeer from "puppeteer";
 import jsdom from "jsdom";
+import unauthUserRep from "database/repositories/UnauthUserRep";
 
 
 class UserService {
@@ -270,13 +271,14 @@ class UserService {
         return messages;
     }
 
-    answerMessage = async (token: string | undefined, message: string, famousPersonName: string) => {
-        const noRegMsgs = [
-            "What did you want to be when you grew up?",
-            "What is the meaning of life?",
-            "What is your greatest accomplishment?"
-        ];
+    answerMessage = async (token: string | undefined, message: string, famousPersonName: string, ipV4?: string, userAgent?: string) => {
+        // const noRegMsgs = [
+        //     "What did you want to be when you grew up?",
+        //     "What is the meaning of life?",
+        //     "What is your greatest accomplishment?"
+        // ];
         const regMaxQuestionsCount = 5;
+        const unauthMaxQuestionsCount = 3;
 
         const {
             description: famousPersonDescription,
@@ -284,12 +286,28 @@ class UserService {
         } = await userRep.getFamousPersonByName(famousPersonName.toUpperCase());
 
         if (token === undefined) {
-            if (!noRegMsgs.includes(message)) {
-                return { isQuestionAllowed: false }
+            // if (!noRegMsgs.includes(message)) {
+            //     return { isQuestionAllowed: false }
+            // }
+            if (ipV4 === undefined || userAgent === undefined) {
+                return { isForbidden: true };
             }
+
+            let unauthUser = await unauthUserRep.getUser(ipV4, userAgent);
+            if (unauthUser === undefined) {
+                unauthUser = await unauthUserRep.addUser(ipV4, userAgent);
+            }
+            else {
+                if (unauthUser.questionsCount >= unauthMaxQuestionsCount) {
+                    return { isLimitReached: true };
+                }
+            }
+
             const answer = await chatGptService.answerMessages([
                 { fromUser: true, content: message },
             ], famousPersonName, famousPersonDescription);
+
+            await unauthUserRep.changeQuestionsCount(ipV4, userAgent, unauthUser.questionsCount + 1);
 
             return { isQuestionAllowed: true, answer };
         }
