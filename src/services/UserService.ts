@@ -5,7 +5,8 @@ import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
 import crypto from "crypto";
 import axios from "axios";
-import pupputeer from "puppeteer";
+// import pupputeer from "puppeteer";
+import jsdom from "jsdom";
 
 
 class UserService {
@@ -220,20 +221,24 @@ class UserService {
     }
 
     checkShareUrl = async (shareUrl: string) => {
-        // return { isUrlValid: true };
+        return { isUrlValid: true };
         let browser;
         try {
-            browser = await pupputeer.launch({ args: ["--no-sandbox"] });
-            const page = await browser.newPage();
+            // browser = await pupputeer.launch({ args: ["--no-sandbox"] });
+            // const page = await browser.newPage();
 
-            const res = await page.goto(shareUrl, { waitUntil: "domcontentloaded" });
+            // const res = await page.goto(shareUrl, { waitUntil: "domcontentloaded" });
             // await page.waitForNetworkIdle();
 
-            if (res === null) {
-                return { isUrlValid: false };
-            }
+            const res = await fetch(shareUrl);
+            // if (res === null) {
+            //     return { isUrlValid: false };
+            // }
+            const { JSDOM } = jsdom;
+            const dom = new JSDOM(await res.arrayBuffer());
+            // dom.window.document.body.
 
-            // const res = await fetch(shareUrl);
+
             const urlText = await res?.text();
             // console.log(urlText);
 
@@ -248,11 +253,11 @@ class UserService {
                 return { isUrlValid: false };
             }
 
-            await browser.close();
+            // await browser.close();
             return { isUrlValid: true };
         }
         catch (error) {
-            await browser?.close();
+            // await browser?.close();
             console.log(error);
             return { isUrlValid: false };
         }
