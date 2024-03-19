@@ -66,6 +66,7 @@ class ClientController {
 
     getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            console.log(req);
             const token = req.headers.authorization;
             const user = await userService.getUser(token!);
             res.status(200).json(user);
