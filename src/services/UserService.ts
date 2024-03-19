@@ -253,7 +253,7 @@ class UserService {
         }
         catch (error) {
             await browser?.close();
-            // console.log(error);
+            console.log(error);
             return { isUrlValid: false };
         }
     }
