@@ -159,7 +159,9 @@ class StripeSevice {
             })
         });
 
-        console.log(res.status);
+        if (!res.ok) {
+            console.log(res.status);
+        }
     }
 
     cancelSubscriptionByStripe = async (stripeCustomerId: string) => {

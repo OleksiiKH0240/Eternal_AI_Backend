@@ -24,6 +24,7 @@ class StripeController {
                     break;
 
                 case "customer.subscription.deleted":
+                    // TODO: cancel all available subscription with given price and customer id
                     console.log("customer subscription was deleted.");
                     stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
                     await stripeSevice.cancelSubscriptionByStripe(stripeCustomerId);
