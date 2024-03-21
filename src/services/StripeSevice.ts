@@ -2,6 +2,7 @@ import userRep from "database/repositories/UserRep";
 import Stripe from "stripe";
 import jwtDataGetters from "utils/jwtDataGetters";
 import userService from "./UserService";
+import jwt from "jsonwebtoken";
 
 
 const { STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET } = process.env;
@@ -129,12 +130,34 @@ class StripeSevice {
     //     return { paymentMethod: "" };
     // }
 
-    activateSubscription = async (stripeCustomerId: string) => {
+    activateSubscription = async (stripeCustomerId: string, stripeSubscriptionId: string) => {
         const { userId } = (
             (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
         ).metadata as unknown as { userId: number };
 
-        await userService.changeSubscription(1, userId);
+        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        const subscriptionExpireDate = new Date(subscription.current_period_end * 1000);
+
+        await this.activateSubFrontendCall(subscriptionExpireDate);
+
+        await userService.changeSubscription(1, userId, subscriptionExpireDate);
+    }
+
+    activateSubFrontendCall = async (subscriptionExpireDate: Date) => {
+        const { FRONTEND_ORIGIN, CLIENT_SECRET } = process.env;
+        const url = `${FRONTEND_ORIGIN}/api/subscription`;
+        const token = jwt.sign({}, CLIENT_SECRET!, { expiresIn: 300 });
+
+        await fetch(url, {
+            method: "POST",
+            headers: {
+                "authorization": token
+            },
+            body: JSON.stringify({
+                subscriptionId: 1,
+                subscriptionExpireDate
+            })
+        });
     }
 
     cancelSubscriptionByStripe = async (stripeCustomerId: string) => {

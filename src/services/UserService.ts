@@ -184,14 +184,14 @@ class UserService {
         await userRep.changePasswordByUserId(userId, hashedPassword);
     }
 
-    changeSubscription = async (subscriptionId: number, userId?: number) => {
+    changeSubscription = async (subscriptionId: number, userId: number, subscriptionExpireDate?: Date) => {
         if (userId !== undefined) {
             await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
             if (subscriptionId === 1) {
-                const now = new Date();
-                const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
+                // const now = new Date();
+                // const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
                 // const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
-                await userRep.changeSubscriptionExpireDateByUserId(userId!, nowPlus1Mon);
+                await userRep.changeSubscriptionExpireDateByUserId(userId!, subscriptionExpireDate!);
             }
 
             if (subscriptionId === 0) {
