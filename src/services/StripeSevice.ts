@@ -148,7 +148,7 @@ class StripeSevice {
         const url = `${FRONTEND_ORIGIN}/api/subscription`;
         const token = jwt.sign({}, CLIENT_SECRET!, { expiresIn: 300 });
 
-        await fetch(url, {
+        const res = await fetch(url, {
             method: "POST",
             headers: {
                 "authorization": token
@@ -158,6 +158,8 @@ class StripeSevice {
                 subscriptionExpireDate
             })
         });
+
+        console.log(res.status);
     }
 
     cancelSubscriptionByStripe = async (stripeCustomerId: string) => {
