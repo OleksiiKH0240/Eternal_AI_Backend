@@ -184,19 +184,38 @@ class UserService {
         await userRep.changePasswordByUserId(userId, hashedPassword);
     }
 
-    changeSubscription = async (subscriptionId: number, userId: number, subscriptionExpireDate?: Date) => {
+    changeSubscription = async (
+        userId: number,
+        subscriptionId?: number,
+        subscriptionExpireDate?: Date,
+        cancelSubscriptionAtPeriodEnd?: boolean) => {
         if (userId !== undefined) {
-            await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
             if (subscriptionId === 1) {
+                await userRep.changeSubscriptionByUserId({
+                    userId,
+                    subscriptionId,
+                    cancelSubscriptionAtPeriodEnd: false,
+                    subscriptionExpireDate
+                });
+
                 // const now = new Date();
                 // const nowPlus1Mon = new Date(now.setMonth(now.getMonth() + 1));
                 // const nowPlus1Mon = new Date(now.setMinutes(now.getMinutes() + 1));
-                await userRep.changeSubscriptionExpireDateByUserId(userId!, subscriptionExpireDate!);
+                // await userRep.changeSubscriptionExpireDateByUserId(userId!, subscriptionExpireDate!);
             }
 
             if (subscriptionId === 0) {
-                await userRep.changeSubscriptionByUserId(userId!, subscriptionId);
-                await userRep.changeSubscriptionExpireDateByUserId(userId!, null);
+                await userRep.changeSubscriptionByUserId({
+                    userId,
+                    subscriptionId,
+                    subscriptionExpireDate: null,
+                    cancelSubscriptionAtPeriodEnd: null
+                });
+                // await userRep.changeSubscriptionExpireDateByUserId(userId!, null);
+            }
+
+            if (subscriptionId === undefined && cancelSubscriptionAtPeriodEnd === true) {
+                await userRep.changeSubscriptionByUserId({ userId, cancelSubscriptionAtPeriodEnd });
             }
         }
     }

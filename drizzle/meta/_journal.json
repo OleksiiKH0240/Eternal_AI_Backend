@@ -43,6 +43,13 @@
       "when": 1710874158628,
       "tag": "0005_damp_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1711112960928,
+      "tag": "0006_early_quentin_quire",
+      "breakpoints": true
     }
   ]
 }

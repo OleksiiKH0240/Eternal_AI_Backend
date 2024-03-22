@@ -138,13 +138,21 @@ class UserRep {
         await this.dbClient.update(users).set({ password }).where(eq(users.userId, userId));
     }
 
-    changeSubscriptionByUserId = async (userId: number, subscriptionId: number) => {
-        await this.dbClient.update(users).set({ subscriptionId }).where(eq(users.userId, userId));
+    changeSubscriptionByUserId = async (values: {
+        userId: number,
+        subscriptionId?: number
+        subscriptionExpireDate?: Date | null,
+        cancelSubscriptionAtPeriodEnd?: boolean | null
+    }) => {
+        const { userId, subscriptionId, subscriptionExpireDate, cancelSubscriptionAtPeriodEnd } = values;
+        await this.dbClient.update(users).set({ subscriptionId, subscriptionExpireDate, cancelSubscriptionAtPeriodEnd }).where(eq(users.userId, userId));
     }
 
     changeSubscriptionExpireDateByUserId = async (userId: number, subscriptionExpireDate: Date | null) => {
         await this.dbClient.update(users).set({ subscriptionExpireDate }).where(eq(users.userId, userId));
     }
+
+
 
     changeQuestionsCountByUserId = async (userId: number, questionsCount: number) => {
         await this.dbClient.update(users).set({ questionsCount }).where(eq(users.userId, userId));

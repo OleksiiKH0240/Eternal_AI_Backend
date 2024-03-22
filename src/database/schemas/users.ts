@@ -10,6 +10,7 @@ const users = mySchema.table("users", {
     phone: varchar("phone", { length: 256 }),
     subscriptionId: integer("subscription_id").default(0).notNull(),
     subscriptionExpireDate: timestamp("subscription_expire_date"),
+    cancelSubscriptionAtPeriodEnd: boolean("cancel_subscription_at_period_end"),
     stripeCustomerId: varchar("stripe_customer_id", { length: 256 }),
     questionsCount: integer("questions_count").default(0).notNull(),
     hasShareBonus: boolean("has_share_bonus").default(true).notNull()

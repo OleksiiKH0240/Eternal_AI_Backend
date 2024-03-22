@@ -138,9 +138,9 @@ class StripeSevice {
         const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         const subscriptionExpireDate = new Date(subscription.current_period_end * 1000);
 
-        await this.activateSubFrontendCall(subscriptionExpireDate);
+        // await this.activateSubFrontendCall(subscriptionExpireDate);
 
-        await userService.changeSubscription(1, userId, subscriptionExpireDate);
+        await userService.changeSubscription(userId, 1, subscriptionExpireDate);
     }
 
     activateSubFrontendCall = async (subscriptionExpireDate: Date) => {
@@ -169,7 +169,7 @@ class StripeSevice {
             (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
         ).metadata as unknown as { userId: number };
 
-        await userService.changeSubscription(0, userId);
+        await userService.changeSubscription(userId, 0);
     }
 
     cancelSubscriptionByUser = async (token: string) => {
@@ -186,7 +186,7 @@ class StripeSevice {
                 status: "active",
                 price: productPrice,
                 customer: stripeCustomerId
-            })).data;
+            })).data.filter((val) => val.cancel_at_period_end === false);
 
             if (subscriptions.length === 0) {
                 return {
@@ -196,9 +196,10 @@ class StripeSevice {
             }
 
             for (const subscription of subscriptions) {
-                await stripe.subscriptions.cancel(subscription.id);
+                await stripe.subscriptions.update(subscription.id, { cancel_at_period_end: true });
             }
 
+            await userService.changeSubscription(userId, undefined, undefined, true);
 
             return {
                 Exists: true,

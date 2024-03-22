@@ -1,0 +1,1 @@
+ALTER TABLE "eternal_ai"."users" ADD COLUMN "cancel_subscription_at_period_end" boolean;
