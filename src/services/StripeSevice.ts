@@ -200,8 +200,10 @@ class StripeSevice {
             }
 
             await userService.changeSubscription(userId, undefined, undefined, true);
+            const user = await userRep.getUserByUserId(userId);
 
             return {
+                user,
                 Exists: true,
                 isCanceled: true
             };
@@ -210,6 +212,10 @@ class StripeSevice {
             Exists: false,
             isCanceled: false
         };
+    }
+
+    changeCustomerPaymentMethod = async (customerId: string) => {
+        stripe.customers.update(customerId,)
     }
 }
 
