@@ -200,7 +200,7 @@ class StripeSevice {
             }
 
             await userService.changeSubscription(userId, undefined, undefined, true);
-            const user = await userRep.getUserByUserId(userId);
+            let { hasShareBonus, password, questionsCount, "stripeCustomerId": _, ...user } = await userRep.getUserByUserId(userId);
 
             return {
                 user,
