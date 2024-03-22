@@ -181,14 +181,24 @@ class StripeSevice {
         const productPrice = product.default_price as string;
 
         if (stripeCustomerId !== null) {
-            const subscription = (await stripe.subscriptions.list({
+            const subscriptions = (await stripe.subscriptions.list({
                 limit: 10,
                 status: "active",
                 price: productPrice,
                 customer: stripeCustomerId
-            })).data[0];
+            })).data;
 
-            await stripe.subscriptions.cancel(subscription.id);
+            if (subscriptions.length === 0) {
+                return {
+                    Exists: false,
+                    isCanceled: false
+                };
+            }
+
+            for (const subscription of subscriptions) {
+                await stripe.subscriptions.cancel(subscription.id);
+            }
+
 
             return {
                 Exists: true,
@@ -197,7 +207,7 @@ class StripeSevice {
         }
         return {
             Exists: false,
-            isCanceled: true
+            isCanceled: false
         };
     }
 }
