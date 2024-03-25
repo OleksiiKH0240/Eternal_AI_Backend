@@ -290,7 +290,7 @@ class UserService {
         return messages;
     }
 
-    answerMessage = async (token: string | undefined, message: string, famousPersonName: string, ipV4?: string, userAgent?: string) => {
+    answerMessage = async (token: string | undefined, message: string, famousPersonName: string, ipV4UserAgentToken?: string) => {
         // const noRegMsgs = [
         //     "What did you want to be when you grew up?",
         //     "What is the meaning of life?",
@@ -308,6 +308,8 @@ class UserService {
             // if (!noRegMsgs.includes(message)) {
             //     return { isQuestionAllowed: false }
             // }
+            const { ipV4, userAgent } = jwtDataGetters.getIpV4UserAgent(ipV4UserAgentToken!);
+
             if (ipV4 === undefined || userAgent === undefined) {
                 return { isForbidden: true };
             }

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import userRep from "database/repositories/UserRep";
-
+import jwt from "jsonwebtoken";
 
 
 class UserMiddlewares {
@@ -124,6 +124,29 @@ class UserMiddlewares {
         // if (token === undefined && (ipV4 === undefined || userAgent === undefined)) {
         //     return res.status(400).json({ message: "for unauthorized user you must specify ipV4 and userAgent." });
         // }
+
+        next();
+    }
+
+    validateUnauthorizedUserMessage = async (req: Request, res: Response, next: NextFunction) => {
+        const token = req.headers.authorization;
+        const { ipV4UserAgentToken } = req.body;
+
+        if (token === undefined) {
+            if (ipV4UserAgentToken === undefined) {
+                return res.status(400).json({ message: "no ipV4UserAgentToken was provided." });
+            } else {
+                const { CLIENT_SECRET } = process.env;
+
+                try {
+                    jwt.verify(ipV4UserAgentToken, CLIENT_SECRET!);
+                    next();
+                }
+                catch (error) {
+                    res.status(401).json({ message: "Invalid ipV4UserAgentToken." });
+                }
+            }
+        }
 
         next();
     }

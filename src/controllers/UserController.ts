@@ -309,9 +309,8 @@ class ClientController {
 
             // const { ipV4, userAgent } = req.body;
             const { ipV4UserAgentToken } = req.body;
-            const { ipV4, userAgent } = jwtDataGetters.getIpV4UserAgent(ipV4UserAgentToken);
 
-            const { isQuestionAllowed, isLimitReached, answer } = await userService.answerMessage(token, message, famousPersonName, ipV4, userAgent);
+            const { isQuestionAllowed, isLimitReached, answer } = await userService.answerMessage(token, message, famousPersonName, ipV4UserAgentToken);
             if (isQuestionAllowed === false) {
                 return res.status(400).json({ message: "your message is not allowed." });
             }
