@@ -138,30 +138,7 @@ class StripeSevice {
         const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         const subscriptionExpireDate = new Date(subscription.current_period_end * 1000);
 
-        // await this.activateSubFrontendCall(subscriptionExpireDate);
-
         await userService.changeSubscription(userId, 1, subscriptionExpireDate);
-    }
-
-    activateSubFrontendCall = async (subscriptionExpireDate: Date) => {
-        const { FRONTEND_ORIGIN, CLIENT_SECRET } = process.env;
-        const url = `${FRONTEND_ORIGIN}/api/subscription`;
-        const token = jwt.sign({}, CLIENT_SECRET!, { expiresIn: 300 });
-
-        const res = await fetch(url, {
-            method: "POST",
-            headers: {
-                "authorization": token
-            },
-            body: JSON.stringify({
-                subscriptionId: 1,
-                subscriptionExpireDate
-            })
-        });
-
-        if (!res.ok) {
-            console.log(res.status);
-        }
     }
 
     cancelSubscriptionByStripe = async (stripeCustomerId: string) => {

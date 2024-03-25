@@ -57,10 +57,10 @@ export const validateGoogleAuth = async (req: Request, res: Response, next: Next
         });
     }
     else {
-        const { CLIENT_SECRET } = process.env;
+        const { GOOGLE_CLIENT_SECRET } = process.env;
 
         try {
-            jwt.verify(googleUserToken, CLIENT_SECRET!);
+            jwt.verify(googleUserToken, GOOGLE_CLIENT_SECRET!);
             next();
         }
         catch (error) {
