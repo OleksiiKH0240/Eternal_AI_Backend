@@ -78,6 +78,11 @@ userRouter.post("/cancel-subscription",
     userController.cancelSubscription
 );
 
+userRouter.post("/get-setup-intent-secret",
+    authenticate,
+    userController.getSetupIntentSecret
+);
+
 userRouter.put("/share-bonus",
     authenticate,
     userMiddlewares.validateShareBonus,

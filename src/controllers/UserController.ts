@@ -218,6 +218,23 @@ class ClientController {
         }
     }
 
+    getSetupIntentSecret = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const { customerExists, clientSecret } = await stripeSevice.getSetupIntentSecret(token!);
+
+            if (customerExists === false) {
+                res.status(400).json({ message: "customerId is not specified for your user." });
+            }
+            if (customerExists === true && clientSecret !== undefined) {
+                res.status(200).json({ clientSecret });
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     shareBonus = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const quantity = 3;

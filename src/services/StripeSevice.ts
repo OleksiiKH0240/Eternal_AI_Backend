@@ -214,8 +214,27 @@ class StripeSevice {
         };
     }
 
+    getSetupIntentSecret = async (token: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+        let { stripeCustomerId } = await userRep.getUserByUserId(userId);
+
+
+        if (stripeCustomerId !== null) {
+            const intent = await stripe.setupIntents.create({
+                customer: stripeCustomerId,
+                automatic_payment_methods: {
+                    enabled: true
+                }
+            });
+            return { customerExists: true, clientSecret: intent.client_secret };
+        }
+        else {
+            return { customerExists: false };
+        }
+    }
+
     changeCustomerPaymentMethod = async (customerId: string) => {
-        stripe.customers.update(customerId,)
+
     }
 }
 
