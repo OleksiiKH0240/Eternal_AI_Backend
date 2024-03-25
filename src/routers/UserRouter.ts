@@ -56,18 +56,6 @@ userRouter.put("/password",
     userController.changePassword
 );
 
-// userRouter.get("/stripe-session-url",
-//     authenticate,
-//     userController.getStripeSessionUrl
-// );
-
-// userRouter.put("/subscription",
-//     authenticateFrontendUser,
-//     authenticate,
-//     userMiddlewares.validateChangeSubscription,
-//     userController.changeSubscription
-// );
-
 userRouter.post("/create-subscription",
     authenticate,
     userController.createSubscription
@@ -81,6 +69,12 @@ userRouter.post("/cancel-subscription",
 userRouter.post("/get-setup-intent-secret",
     authenticate,
     userController.getSetupIntentSecret
+);
+
+userRouter.post("/change-payment-method",
+    authenticate,
+    userMiddlewares.validateChangePaymentMethod,
+    userController.changePaymentMethod
 );
 
 userRouter.put("/share-bonus",

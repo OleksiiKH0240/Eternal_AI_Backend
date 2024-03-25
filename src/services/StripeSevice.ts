@@ -210,8 +210,37 @@ class StripeSevice {
         }
     }
 
-    changeCustomerPaymentMethod = async (customerId: string) => {
+    changeCustomerPaymentMethod = async (token: string, paymentMethodId: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+        let { stripeCustomerId } = await userRep.getUserByUserId(userId);
 
+        if (stripeCustomerId !== null) {
+            // const paymentMethods = await stripe.paymentMethods.list({
+            //     customer: stripeCustomerId
+            // });
+            // console.log(paymentMethods.data[0].card);
+
+            const customer = await stripe.customers.update(stripeCustomerId, {
+                // source: paymentMethodId
+                invoice_settings: {
+                    default_payment_method: paymentMethodId
+                }
+            });
+
+            // TODO: maybe I should delete previous default payment method after setting new one
+            // console.log(customer);
+
+            if (customer.invoice_settings.default_payment_method === paymentMethodId) {
+                return { customerExists: true, isSuccessfull: true };
+            }
+            else {
+                return { customerExists: true, isSuccessfull: false };
+            }
+
+        }
+        else {
+            return { customerExists: false };
+        }
     }
 }
 

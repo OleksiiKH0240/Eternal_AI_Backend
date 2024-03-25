@@ -237,6 +237,29 @@ class ClientController {
         }
     }
 
+    changePaymentMethod = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const paymentMethodId = req.body.paymentMethodId;
+
+            const { customerExists, isSuccessfull } = await stripeSevice.changeCustomerPaymentMethod(token!, paymentMethodId);
+
+            if (customerExists === false) {
+                res.status(400).json({ message: "customerId is not specified for your user." });
+            }
+
+            if (customerExists === true && isSuccessfull === true) {
+                res.status(200).json({ message: "customer default payment method was successfully changed." });
+            }
+            else if (isSuccessfull === false) {
+                res.status(400).json({ message: "customer default payment method was not changed." });
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
     shareBonus = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const quantity = 3;
