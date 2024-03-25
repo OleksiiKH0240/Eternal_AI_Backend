@@ -67,7 +67,8 @@ class ClientController {
 
     getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log(req.body);
+            console.log("body", req.body);
+            console.log("ip", req.socket.remoteAddress);
             const token = req.headers.authorization;
             const user = await userService.getUser(token!);
             res.status(200).json(user);
