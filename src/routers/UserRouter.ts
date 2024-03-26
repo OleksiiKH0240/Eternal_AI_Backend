@@ -71,11 +71,11 @@ userRouter.post("/get-setup-intent-secret",
     userController.getSetupIntentSecret
 );
 
-userRouter.post("/change-payment-method",
-    authenticate,
-    userMiddlewares.validateChangePaymentMethod,
-    userController.changePaymentMethod
-);
+// userRouter.post("/change-payment-method",
+//     authenticate,
+//     userMiddlewares.validateChangePaymentMethod,
+//     userController.changePaymentMethod
+// );
 
 userRouter.put("/share-bonus",
     authenticate,

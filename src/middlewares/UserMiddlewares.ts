@@ -20,15 +20,15 @@ class UserMiddlewares {
         next();
     }
 
-    validateChangePaymentMethod = async (req: Request, res: Response, next: NextFunction) => {
-        const { paymentMethodId } = req.body;
+    // validateChangePaymentMethod = async (req: Request, res: Response, next: NextFunction) => {
+    //     const { paymentMethodId } = req.body;
 
-        if (paymentMethodId === undefined) {
-            return res.status(400).json({ message: "field paymentMethodId is not specified in request body." });
-        }
+    //     if (paymentMethodId === undefined) {
+    //         return res.status(400).json({ message: "field paymentMethodId is not specified in request body." });
+    //     }
 
-        next();
-    }
+    //     next();
+    // }
 
     validateShareBonus = async (req: Request, res: Response, next: NextFunction) => {
         const { shareUrl } = req.body;
