@@ -33,7 +33,7 @@ class StripeController {
                     console.log("customer payment method was changed.");
                     stripeCustomerId = (event as Stripe.SetupIntentSucceededEvent).data.object.customer as string;
                     const paymentMethodId = (event as Stripe.SetupIntentSucceededEvent).data.object.payment_method as string;
-                    const { isSuccessfull } = await stripeSevice.changeCustomerPaymentMethod(stripeCustomerId, paymentMethodId);
+                    await stripeSevice.changeCustomerPaymentMethod(stripeCustomerId, paymentMethodId);
                     break;
 
                 default:

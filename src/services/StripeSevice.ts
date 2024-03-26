@@ -211,12 +211,8 @@ class StripeSevice {
     }
 
     changeCustomerPaymentMethod = async (stripeCustomerId: string, paymentMethodId: string) => {
-        // const paymentMethods = await stripe.paymentMethods.list({
-        //     customer: stripeCustomerId
-        // });
-        // console.log(paymentMethods.data[0].card);
-
-        const customer = await stripe.customers.update(stripeCustomerId, {
+        // change default payment method for customer
+        await stripe.customers.update(stripeCustomerId, {
             // source: paymentMethodId
             invoice_settings: {
                 default_payment_method: paymentMethodId
@@ -226,11 +222,20 @@ class StripeSevice {
         // TODO: maybe I should delete previous default payment method after setting new one
         // console.log(customer);
 
-        if (customer.invoice_settings.default_payment_method === paymentMethodId) {
-            return { isSuccessfull: true };
-        }
-        else {
-            return { isSuccessfull: false };
+        // change default payment method for subscription
+        const { PRODUCT_API_ID } = process.env;
+        const product = await stripe.products.retrieve(PRODUCT_API_ID!);
+        const productPrice = product.default_price as string;
+
+        const subscriptions = (await stripe.subscriptions.list({
+            limit: 10,
+            status: "active",
+            price: productPrice,
+            customer: stripeCustomerId
+        })).data.filter((val) => val.cancel_at_period_end === false);
+
+        for (const subscription of subscriptions) {
+            await stripe.subscriptions.update(subscription.id, { default_payment_method: paymentMethodId });
         }
     }
 }
