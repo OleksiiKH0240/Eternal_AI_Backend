@@ -140,10 +140,9 @@ class UserMiddlewares {
 
                 try {
                     jwt.verify(ipV4UserAgentToken, CLIENT_SECRET!);
-                    next();
                 }
                 catch (error) {
-                    res.status(401).json({ message: "Invalid ipV4UserAgentToken." });
+                    return res.status(401).json({ message: "Invalid ipV4UserAgentToken." });
                 }
             }
         }
