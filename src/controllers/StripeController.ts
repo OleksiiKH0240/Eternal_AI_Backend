@@ -17,16 +17,23 @@ class StripeController {
                 //     break;
                 case "invoice.paid":
                     console.log("invoice was paid.");
-                    stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
-                    const stripeSubscriptionId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.subscription as string;
+                    stripeCustomerId = (event as Stripe.InvoicePaidEvent).data.object.customer as string;
+                    const stripeSubscriptionId = (event as Stripe.InvoicePaidEvent).data.object.subscription as string;
 
                     await stripeSevice.activateSubscription(stripeCustomerId, stripeSubscriptionId);
                     break;
 
                 case "customer.subscription.deleted":
                     console.log("customer subscription was deleted.");
-                    stripeCustomerId = (event as Stripe.CheckoutSessionCompletedEvent).data.object.customer as string;
+                    stripeCustomerId = (event as Stripe.CustomerSubscriptionDeletedEvent).data.object.customer as string;
                     await stripeSevice.cancelSubscriptionByStripe(stripeCustomerId);
+                    break;
+
+                case "setup_intent.succeeded":
+                    console.log("customer payment method was changed.");
+                    stripeCustomerId = (event as Stripe.SetupIntentSucceededEvent).data.object.customer as string;
+                    const paymentMethodId = (event as Stripe.SetupIntentSucceededEvent).data.object.payment_method as string;
+                    const { isSuccessfull } = await stripeSevice.changeCustomerPaymentMethod(stripeCustomerId, paymentMethodId);
                     break;
 
                 default:

@@ -210,36 +210,27 @@ class StripeSevice {
         }
     }
 
-    changeCustomerPaymentMethod = async (token: string, paymentMethodId: string) => {
-        const userId = jwtDataGetters.getUserId(token);
-        let { stripeCustomerId } = await userRep.getUserByUserId(userId);
+    changeCustomerPaymentMethod = async (stripeCustomerId: string, paymentMethodId: string) => {
+        // const paymentMethods = await stripe.paymentMethods.list({
+        //     customer: stripeCustomerId
+        // });
+        // console.log(paymentMethods.data[0].card);
 
-        if (stripeCustomerId !== null) {
-            // const paymentMethods = await stripe.paymentMethods.list({
-            //     customer: stripeCustomerId
-            // });
-            // console.log(paymentMethods.data[0].card);
-
-            const customer = await stripe.customers.update(stripeCustomerId, {
-                // source: paymentMethodId
-                invoice_settings: {
-                    default_payment_method: paymentMethodId
-                }
-            });
-
-            // TODO: maybe I should delete previous default payment method after setting new one
-            // console.log(customer);
-
-            if (customer.invoice_settings.default_payment_method === paymentMethodId) {
-                return { customerExists: true, isSuccessfull: true };
+        const customer = await stripe.customers.update(stripeCustomerId, {
+            // source: paymentMethodId
+            invoice_settings: {
+                default_payment_method: paymentMethodId
             }
-            else {
-                return { customerExists: true, isSuccessfull: false };
-            }
+        });
 
+        // TODO: maybe I should delete previous default payment method after setting new one
+        // console.log(customer);
+
+        if (customer.invoice_settings.default_payment_method === paymentMethodId) {
+            return { isSuccessfull: true };
         }
         else {
-            return { customerExists: false };
+            return { isSuccessfull: false };
         }
     }
 }
