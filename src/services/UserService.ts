@@ -310,10 +310,6 @@ class UserService {
             // }
             const { ipV4, userAgent } = jwtDataGetters.getIpV4UserAgent(ipV4UserAgentToken!);
 
-            if (ipV4 === undefined || userAgent === undefined) {
-                return { isForbidden: true };
-            }
-
             let unauthUser = await unauthUserRep.getUser(ipV4, userAgent);
             if (unauthUser === undefined) {
                 unauthUser = await unauthUserRep.addUser(ipV4, userAgent);

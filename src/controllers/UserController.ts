@@ -309,8 +309,11 @@ class ClientController {
 
             // const { ipV4, userAgent } = req.body;
             const { ipV4UserAgentToken } = req.body;
+            console.log("1");
 
             const { isQuestionAllowed, isLimitReached, answer } = await userService.answerMessage(token, message, famousPersonName, ipV4UserAgentToken);
+
+            console.log(isQuestionAllowed, isLimitReached, answer);
             if (isQuestionAllowed === false) {
                 return res.status(400).json({ message: "your message is not allowed." });
             }

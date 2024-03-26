@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import userRep from "database/repositories/UserRep";
 import jwt from "jsonwebtoken";
+import jwtDataGetters from "utils/jwtDataGetters";
 
 
 class UserMiddlewares {
@@ -140,6 +141,11 @@ class UserMiddlewares {
 
                 try {
                     jwt.verify(ipV4UserAgentToken, CLIENT_SECRET!);
+
+                    const { ipV4, userAgent } = jwtDataGetters.getIpV4UserAgent(ipV4UserAgentToken!);
+                    if (ipV4 === undefined || userAgent === undefined) {
+                        return res.status(400).json({ message: "ipV4UserAgentToken does not containt required fields." });
+                    }
                 }
                 catch (error) {
                     return res.status(401).json({ message: "Invalid ipV4UserAgentToken." });
