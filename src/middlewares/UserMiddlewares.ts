@@ -132,6 +132,7 @@ class UserMiddlewares {
     validateUnauthorizedUserMessage = async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
         const { ipV4UserAgentToken } = req.body;
+        console.log("validate unauth message");
 
         if (token === undefined) {
             if (ipV4UserAgentToken === undefined) {
