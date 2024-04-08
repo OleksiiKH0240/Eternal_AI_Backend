@@ -195,6 +195,7 @@ class ClientController {
 
     createSubscription = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            console.log("create subscription")
             const token = req.headers.authorization;
             const subscription = await stripeSevice.createSubscription(token!);
             res.json(subscription);
