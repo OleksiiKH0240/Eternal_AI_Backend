@@ -131,6 +131,15 @@ class StripeSevice {
     //     return { paymentMethod: "" };
     // }
 
+    changeCurrentPeriodEnd = async (stripeCustomerId: string, currentPeriodEnd: number) => {
+        const { userId } = (
+            (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer
+        ).metadata as unknown as { userId: number };
+
+        const subscriptionExpireDate = new Date(currentPeriodEnd * 1000);
+        await userService.changeSubscription(userId, 1, subscriptionExpireDate);
+    }
+
     activateSubscription = async (stripeCustomerId: string, stripeSubscriptionId: string) => {
         const { userId } = (
             (await stripe.customers.retrieve(stripeCustomerId)) as Stripe.Customer

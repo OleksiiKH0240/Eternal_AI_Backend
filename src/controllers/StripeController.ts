@@ -29,6 +29,22 @@ class StripeController {
                     await stripeSevice.cancelSubscriptionByStripe(stripeCustomerId);
                     break;
 
+                case "customer.subscription.updated":
+                    const previousAttributes = (event as Stripe.CustomerSubscriptionUpdatedEvent).data.previous_attributes;
+                    if (
+                        previousAttributes !== undefined &&
+                        previousAttributes.current_period_end !== undefined &&
+                        previousAttributes.current_period_start !== undefined
+                    ) {
+                        console.log("customer subscription was updated.");
+                        console.log(event);
+                        console.log("subscription current period end was changed.");
+                        stripeCustomerId = (event as Stripe.CustomerSubscriptionDeletedEvent).data.object.customer as string;
+                        const currentPeriodEnd = (event as Stripe.CustomerSubscriptionUpdatedEvent).data.object.current_period_end;
+                        await stripeSevice.changeCurrentPeriodEnd(stripeCustomerId, currentPeriodEnd);
+                    }
+                    break;
+
                 case "setup_intent.succeeded":
                     console.log("customer payment method was changed.");
                     stripeCustomerId = (event as Stripe.SetupIntentSucceededEvent).data.object.customer as string;
