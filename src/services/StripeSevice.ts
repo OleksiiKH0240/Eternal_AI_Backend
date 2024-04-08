@@ -17,6 +17,7 @@ class StripeSevice {
     createSubscription = async (token: string) => {
         const userId = jwtDataGetters.getUserId(token);
         let { stripeCustomerId, email, name, phone } = await userRep.getUserByUserId(userId);
+        console.log(`create subscription for ${email} with id: ${userId}`)
         if (stripeCustomerId !== null) {
             await stripe.customers.update(stripeCustomerId,
                 {
