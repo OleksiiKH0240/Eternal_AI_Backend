@@ -131,6 +131,7 @@ class UserService {
             const now = new Date();
             if (now <= otpExpiredTimestamp) {
                 if (submittedOtp === otp) {
+                    await userRep.changeOtp(userId, null, null);
                     return { isOtpSent: true, isExpired: false, isValid: true };
                 }
                 else {

@@ -166,7 +166,7 @@ class UserRep {
         await this.dbClient.update(users).set({ hasShareBonus }).where(eq(users.userId, userId));
     }
 
-    changeOtp = async (userId: number, otp: string, otpExpiredTimestamp: Date) => {
+    changeOtp = async (userId: number, otp: string | null, otpExpiredTimestamp: Date | null) => {
         await this.dbClient.update(users).set({ otp, otpExpiredTimestamp }).where(eq(users.userId, userId));
     }
 
