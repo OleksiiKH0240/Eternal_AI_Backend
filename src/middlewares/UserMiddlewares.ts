@@ -13,6 +13,14 @@ class UserMiddlewares {
         next();
     }
 
+    validateCheckOtp = async (req: Request, res: Response, next: NextFunction) => {
+        const { submittedOtp } = req.body;
+        if (typeof submittedOtp !== "string") {
+            return res.status(400).json({ message: "field submittedOtp has invalid type. " });
+        }
+        next();
+    }
+
     validateChangeSubscription = async (req: Request, res: Response, next: NextFunction) => {
         const { subscriptionId } = req.body;
         if (typeof subscriptionId !== "number" || !Number.isInteger(subscriptionId) || subscriptionId < 0) {

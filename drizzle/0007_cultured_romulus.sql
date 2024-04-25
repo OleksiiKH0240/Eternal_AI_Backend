@@ -1,0 +1,1 @@
+ALTER TABLE "eternal_ai"."users" ADD COLUMN "otp" varchar(6);

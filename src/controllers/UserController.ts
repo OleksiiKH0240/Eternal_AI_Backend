@@ -43,6 +43,47 @@ class ClientController {
         }
     }
 
+    sendOtp = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+
+            await userService.sendOtp(token!);
+            res.status(200).json({ message: "otp was sent." });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
+    checkOtp = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization;
+            const submittedOtp = req.body.submittedOtp;
+
+            const { isOtpSent, isExpired, isValid } = await userService.checkOtp(token!, submittedOtp);
+            if (isOtpSent) {
+                if (isExpired) {
+                    res.status(400).json({ message: "otp was expired." });
+                }
+                else {
+                    if (isValid) {
+                        res.status(200).json({ message: "otp is valid." });
+                    }
+                    else {
+                        res.status(400).json({ message: "otp is invalid." });
+                    }
+                }
+            }
+            else {
+                res.status(400).json({ message: "otp was not sent." });
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+
+
     // oauthGoogleUrl = async ({ res, next }: { res: Response, next: NextFunction }) => {
     //     try {
     //         res.status(200).json({ url: googleOAuthService.getGoogleOAuthUrl() });

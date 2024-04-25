@@ -166,6 +166,9 @@ class UserRep {
         await this.dbClient.update(users).set({ hasShareBonus }).where(eq(users.userId, userId));
     }
 
+    changeOtp = async (userId: number, otp: string, otpExpiredTimestamp: Date) => {
+        await this.dbClient.update(users).set({ otp, otpExpiredTimestamp }).where(eq(users.userId, userId));
+    }
 
     getMessagesByFamousPerson = async (famousPersonName: string, userId: number, offset?: number, limit?: number) => {
         const filteredChats = this.dbClient.select({

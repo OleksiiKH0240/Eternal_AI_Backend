@@ -50,6 +50,20 @@
       "when": 1711112960928,
       "tag": "0006_early_quentin_quire",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1714050974310,
+      "tag": "0007_cultured_romulus",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1714052205800,
+      "tag": "0008_adorable_sugar_man",
+      "breakpoints": true
     }
   ]
 }

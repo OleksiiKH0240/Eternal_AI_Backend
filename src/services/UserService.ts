@@ -4,11 +4,23 @@ import jwt from "jsonwebtoken";
 import jwtDataGetters from "../utils/jwtDataGetters";
 import chatGptService from "./ChatGptService";
 import crypto from "crypto";
-import axios from "axios";
 // import pupputeer from "puppeteer";
 import jsdom from "jsdom";
 import unauthUserRep from "database/repositories/UnauthUserRep";
+import nodemailer from "nodemailer";
 
+
+const { GMAIL_MAILER_HOST, GMAIL_MAILER_PORT, GMAIL_MAILER_USERNAME, GMAIL_MAILER_PASSWORD } = process.env;
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: GMAIL_MAILER_HOST,
+    port: Number(GMAIL_MAILER_PORT),
+    secure: false,
+    auth: {
+        user: GMAIL_MAILER_USERNAME,
+        pass: GMAIL_MAILER_PASSWORD
+    }
+});
 
 class UserService {
     signUp = async (email: string, password: string, name?: string) => {
@@ -80,6 +92,57 @@ class UserService {
                 isPasswordValid: undefined,
                 token: undefined
             }
+        }
+    }
+
+    sendOtp = async (token: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+        const { email } = await userRep.getUserByUserId(userId);
+
+        const { otp, otpExpiredTimestamp } = this.generateOtp();
+        await userRep.changeOtp(userId, otp, otpExpiredTimestamp);
+
+        const info = await transporter.sendMail({
+            from: { name: "Eternal Ai", address: `${GMAIL_MAILER_USERNAME}` },
+            to: email,
+            subject: "Eternal Ai OTP for password recover",
+            text: `your OTP: ${otp}`,
+        });
+
+        // console.log(info);
+        // console.log("otp email was sent, ", info.messageId);
+
+    }
+
+    generateOtp = () => {
+        const otp = String(Math.min(Math.floor(100000 + Math.random() * 900000), 999999));
+
+        const OTP_TTL = Number(process.env.OTP_TTL);
+        const otpExpiredTimestamp = new Date(Date.now() + (OTP_TTL * 1000))
+
+        return { otp, otpExpiredTimestamp, OTP_TTL }
+    }
+
+    checkOtp = async (token: string, submittedOtp: string) => {
+        const userId = jwtDataGetters.getUserId(token);
+
+        const { otp, otpExpiredTimestamp } = await userRep.getUserByUserId(userId);
+        if (otp !== null && otpExpiredTimestamp !== null) {
+            const now = new Date();
+            if (now <= otpExpiredTimestamp) {
+                if (submittedOtp === otp) {
+                    return { isOtpSent: true, isExpired: false, isValid: true };
+                }
+                else {
+                    return { isOtpSent: true, isExpired: false, isValid: false };
+                }
+            }
+            else {
+                return { isOtpSent: true, isExpired: true };
+            }
+        }
+        else {
+            return { isOtpSent: false };
         }
     }
 

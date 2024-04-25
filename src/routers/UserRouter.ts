@@ -16,6 +16,17 @@ userRouter.post("/log-in",
     userController.logIn
 );
 
+userRouter.get("/send-otp",
+    authenticate,
+    userController.sendOtp
+);
+
+userRouter.post("/check-otp",
+    authenticate,
+    userMiddlewares.validateCheckOtp,
+    userController.checkOtp
+);
+
 userRouter.post("/oauth/google",
     validateGoogleAuth,
     userController.oauthGoogle

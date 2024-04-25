@@ -6,6 +6,8 @@ const users = mySchema.table("users", {
     userId: serial("user_id").primaryKey(),
     email: varchar("email", { length: 256 }).unique().notNull(),
     password: varchar("password", { length: 256 }).notNull(),
+    otp: varchar("otp", { length: 6 }),
+    otpExpiredTimestamp: timestamp("otp_expired_timestamp"),
     name: varchar("name", { length: 256 }),
     phone: varchar("phone", { length: 256 }),
     subscriptionId: integer("subscription_id").default(0).notNull(),
