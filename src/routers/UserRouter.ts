@@ -16,7 +16,8 @@ userRouter.post("/log-in",
     userController.logIn
 );
 
-userRouter.get("/send-otp",
+userRouter.post("/send-otp",
+    userMiddlewares.validateSendOtp,
     userController.sendOtp
 );
 
