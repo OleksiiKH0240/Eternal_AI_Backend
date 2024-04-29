@@ -95,22 +95,28 @@ class UserService {
         }
     }
 
-    sendOtp = async (token: string) => {
-        const userId = jwtDataGetters.getUserId(token);
-        const { email } = await userRep.getUserByUserId(userId);
+    sendOtp = async (email: string) => {
+        const user = await userRep.getUserByEmail(email);
 
-        const { otp, otpExpiredTimestamp } = this.generateOtp();
-        await userRep.changeOtp(userId, otp, otpExpiredTimestamp);
+        if (user === undefined) {
+            return { userExists: false };
+        }
+        else {
+            const { otp, otpExpiredTimestamp } = this.generateOtp();
+            await userRep.changeOtp(user.userId, otp, otpExpiredTimestamp);
 
-        const info = await transporter.sendMail({
-            from: { name: "Eternal Ai", address: `${GMAIL_MAILER_USERNAME}` },
-            to: email,
-            subject: "Eternal Ai OTP for password recover",
-            text: `your OTP: ${otp}`,
-        });
+            const info = await transporter.sendMail({
+                from: { name: "Eternal Ai", address: `${GMAIL_MAILER_USERNAME}` },
+                to: email,
+                subject: "Eternal Ai OTP for password recover",
+                text: `your OTP: ${otp}`,
+            });
 
-        // console.log(info);
-        // console.log("otp email was sent, ", info.messageId);
+            return { userExists: true };
+            // console.log(info);
+            // console.log("otp email was sent, ", info.messageId);
+        }
+
 
     }
 
@@ -123,27 +129,33 @@ class UserService {
         return { otp, otpExpiredTimestamp, OTP_TTL }
     }
 
-    checkOtp = async (token: string, submittedOtp: string) => {
-        const userId = jwtDataGetters.getUserId(token);
+    checkOtp = async (email: string, submittedOtp: string, newPassword: string) => {
+        const user = await userRep.getUserByEmail(email);
+        if (user === undefined) {
+            return { userExists: false };
+        }
+        else {
+            const { userId, otp, otpExpiredTimestamp } = user;
 
-        const { otp, otpExpiredTimestamp } = await userRep.getUserByUserId(userId);
-        if (otp !== null && otpExpiredTimestamp !== null) {
-            const now = new Date();
-            if (now <= otpExpiredTimestamp) {
-                if (submittedOtp === otp) {
-                    await userRep.changeOtp(userId, null, null);
-                    return { isOtpSent: true, isExpired: false, isValid: true };
+            if (otp !== null && otpExpiredTimestamp !== null) {
+                const now = new Date();
+                if (now <= otpExpiredTimestamp) {
+                    if (submittedOtp === otp) {
+                        await userRep.changeOtp(userId, null, null);
+                        await this.changePassword(undefined, userId, newPassword);
+                        return { isOtpSent: true, isExpired: false, isValid: true };
+                    }
+                    else {
+                        return { isOtpSent: true, isExpired: false, isValid: false };
+                    }
                 }
                 else {
-                    return { isOtpSent: true, isExpired: false, isValid: false };
+                    return { isOtpSent: true, isExpired: true };
                 }
             }
             else {
-                return { isOtpSent: true, isExpired: true };
+                return { isOtpSent: false };
             }
-        }
-        else {
-            return { isOtpSent: false };
         }
     }
 
@@ -239,8 +251,10 @@ class UserService {
 
     }
 
-    changePassword = async (token: string, password: string) => {
-        const userId = jwtDataGetters.getUserId(token);
+    changePassword = async (token: string | undefined, userId: number | undefined, password: string) => {
+        if (userId === undefined) {
+            userId = jwtDataGetters.getUserId(token!);
+        }
 
         const saltRounds = Number(process.env.SALT_ROUNDS);
         const hashedPassword = await bcrypt.hash(password, saltRounds);

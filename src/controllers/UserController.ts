@@ -45,9 +45,13 @@ class ClientController {
 
     sendOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const token = req.headers.authorization;
+            const email = req.body.email;
 
-            await userService.sendOtp(token!);
+            const { userExists } = await userService.sendOtp(email);
+            if (userExists === false) {
+                return res.status(400).json({ message: "user with this email does not exist." });
+            }
+
             res.status(200).json({ message: "otp was sent." });
         }
         catch (error) {
@@ -57,10 +61,15 @@ class ClientController {
 
     checkOtp = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const token = req.headers.authorization;
+            const email = req.body.email;
             const submittedOtp = req.body.submittedOtp;
+            const newPassword = req.body.newPassword;
 
-            const { isOtpSent, isExpired, isValid } = await userService.checkOtp(token!, submittedOtp);
+            const { userExists, isOtpSent, isExpired, isValid } = await userService.checkOtp(email, submittedOtp, newPassword);
+            if (userExists === false) {
+                return res.status(400).json({ message: "user with this email does not exist." });
+            }
+
             if (isOtpSent) {
                 if (isExpired) {
                     res.status(400).json({ message: "otp was expired." });
@@ -70,7 +79,7 @@ class ClientController {
                         res.status(200).json({ message: "otp is valid." });
                     }
                     else {
-                        res.status(400).json({ message: "otp is invalid." });
+                        res.status(400).json({ message: "otp is invalid, password was changed." });
                     }
                 }
             }
@@ -200,7 +209,7 @@ class ClientController {
             const token = req.headers.authorization;
             const password = req.body.password;
 
-            await userService.changePassword(token!, password);
+            await userService.changePassword(token!, undefined, password);
 
             res.status(200).json({ message: "user password was successfully changed." });
         }
