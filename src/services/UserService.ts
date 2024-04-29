@@ -129,7 +129,7 @@ class UserService {
         return { otp, otpExpiredTimestamp, OTP_TTL }
     }
 
-    checkOtp = async (email: string, submittedOtp: string, newPassword: string) => {
+    checkOtp = async (email: string, submittedOtp: string) => {
         const user = await userRep.getUserByEmail(email);
         if (user === undefined) {
             return { userExists: false };
@@ -142,8 +142,18 @@ class UserService {
                 if (now <= otpExpiredTimestamp) {
                     if (submittedOtp === otp) {
                         await userRep.changeOtp(userId, null, null);
-                        await this.changePassword(undefined, userId, newPassword);
-                        return { isOtpSent: true, isExpired: false, isValid: true };
+                        
+                        const ttl = Number(process.env.JWT_TTL);
+                        const JWT_SECRET = String(process.env.JWT_SECRET);
+                        const options = (user.subscriptionId === -1) ? {} : { expiresIn: ttl };
+
+                        const token = jwt.sign(
+                            {
+                                userId: user.userId,
+                            },
+                            JWT_SECRET, options);
+
+                        return { isOtpSent: true, isExpired: false, isValid: true, token };
                     }
                     else {
                         return { isOtpSent: true, isExpired: false, isValid: false };

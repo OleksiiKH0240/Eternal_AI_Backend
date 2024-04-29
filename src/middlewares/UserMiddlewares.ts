@@ -14,9 +14,9 @@ class UserMiddlewares {
     }
 
     validateCheckOtp = async (req: Request, res: Response, next: NextFunction) => {
-        const { email, submittedOtp, newPassword } = req.body;
-        if (typeof email !== "string" || typeof submittedOtp !== "string" || typeof newPassword !== "string") {
-            return res.status(400).json({ message: "some of these fields: email, submittedOtp, newPassword have invalid type. " });
+        const { email, submittedOtp } = req.body;
+        if (typeof email !== "string" || typeof submittedOtp !== "string") {
+            return res.status(400).json({ message: "some of these fields: email, submittedOtp have invalid type. " });
         }
         next();
     }

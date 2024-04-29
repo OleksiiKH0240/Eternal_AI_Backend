@@ -63,9 +63,8 @@ class ClientController {
         try {
             const email = req.body.email;
             const submittedOtp = req.body.submittedOtp;
-            const newPassword = req.body.newPassword;
 
-            const { userExists, isOtpSent, isExpired, isValid } = await userService.checkOtp(email, submittedOtp, newPassword);
+            const { userExists, isOtpSent, isExpired, isValid, token } = await userService.checkOtp(email, submittedOtp);
             if (userExists === false) {
                 return res.status(400).json({ message: "user with this email does not exist." });
             }
@@ -76,7 +75,7 @@ class ClientController {
                 }
                 else {
                     if (isValid) {
-                        res.status(200).json({ message: "otp is valid, password was changed." });
+                        res.status(200).json({ message: "otp is valid.", token });
                     }
                     else {
                         res.status(400).json({ message: "otp is invalid." });
