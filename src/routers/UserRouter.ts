@@ -17,12 +17,10 @@ userRouter.post("/log-in",
 );
 
 userRouter.get("/send-otp",
-    authenticate,
     userController.sendOtp
 );
 
 userRouter.post("/check-otp",
-    authenticate,
     userMiddlewares.validateCheckOtp,
     userController.checkOtp
 );
