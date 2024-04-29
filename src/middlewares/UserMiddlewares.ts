@@ -21,6 +21,14 @@ class UserMiddlewares {
         next();
     }
 
+    validateSendOtp = async (req: Request, res: Response, next: NextFunction) => {
+        const { email } = req.body;
+        if (typeof email !== "string") {
+            return res.status(400).json({ message: "field email has invalid type. " });
+        }
+        next();
+    }
+
     validateChangeSubscription = async (req: Request, res: Response, next: NextFunction) => {
         const { subscriptionId } = req.body;
         if (typeof subscriptionId !== "number" || !Number.isInteger(subscriptionId) || subscriptionId < 0) {
