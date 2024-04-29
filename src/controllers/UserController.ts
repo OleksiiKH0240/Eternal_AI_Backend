@@ -76,10 +76,10 @@ class ClientController {
                 }
                 else {
                     if (isValid) {
-                        res.status(200).json({ message: "otp is valid." });
+                        res.status(200).json({ message: "otp is valid, password was changed." });
                     }
                     else {
-                        res.status(400).json({ message: "otp is invalid, password was changed." });
+                        res.status(400).json({ message: "otp is invalid." });
                     }
                 }
             }
