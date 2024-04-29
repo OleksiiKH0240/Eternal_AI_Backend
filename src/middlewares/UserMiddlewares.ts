@@ -57,6 +57,7 @@ class UserMiddlewares {
 
     validateChangeUser = async (req: Request, res: Response, next: NextFunction) => {
         const { name, phone, email, password } = req.body;
+        console.log("body", req.body);
         if (name === undefined && phone === undefined && email === undefined && password === undefined) {
             console.log("password type", typeof password);
             return res.status(200).json({ message: "no data was specified. " });
